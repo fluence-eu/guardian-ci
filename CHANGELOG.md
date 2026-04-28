@@ -1,6 +1,18 @@
 # Changelog
 
 All notable changes to this project will be documented in this file.
+## [0.4.0] - 2026-04-28
+
+### Added
+
+- feat(steps,cli): expose per-group commands with --report flag
+- feat(generator): bin/fluence-ci supports per-group sub-commands
+- feat(generator): drop config/ci.rb inject in favor of bin/fluence-ci
+
+### CI
+
+- ci: skip rubocop and main matrix on release PRs
+
 ## [0.3.0] - 2026-04-28
 
 ### Added
