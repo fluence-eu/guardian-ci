@@ -21,3 +21,11 @@ Metrics/BlockLength:
 Naming/FileName:
   Exclude:
     - 'lib/fluence-ci-tools.rb'
+
+# Step group methods in Steps catalog have a default+report branch
+# each, with up to 3 step calls per branch — they intrinsically clock
+# at ~14 lines. Disable the cop for this file rather than scatter
+# `# rubocop:disable` directives.
+Metrics/MethodLength:
+  Exclude:
+    - 'lib/fluence/ci/tools/steps.rb'

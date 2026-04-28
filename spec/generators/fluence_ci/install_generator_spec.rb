@@ -38,7 +38,8 @@ RSpec.describe FluenceCi::InstallGenerator do
       content = File.read(target)
       expect(content).to include('#!/usr/bin/env ruby')
       expect(content).to include("require 'fluence/ci/tools/cli'")
-      expect(content).to include("Fluence::Ci::Tools::CLI.start(['check', *ARGV])")
+      expect(content).to include('Fluence::Ci::Tools::CLI.start(argv)')
+      expect(content).to include('ARGV.empty? ? %w[all] : ARGV')
     end
 
     it 'does not touch config/ci.rb' do
