@@ -18,7 +18,7 @@ module Fluence
 
         # Measure yardstick coverage, write the textual report to
         # {REPORT_PATH}, and exit 1 if coverage is below the threshold
-        # configured in `.yardstick.yml`.
+        # configured in `.yardstick.yml` (defaults to 100% when absent).
         # @return [void]
         # @raise [SystemExit] when coverage is below the threshold
         # @api public
@@ -31,8 +31,7 @@ module Fluence
           puts "YARD-Coverage: #{coverage}% (threshold: #{config.threshold}%)"
           return if coverage >= config.threshold
 
-          warn "YARD-Coverage must be at least #{config.threshold}% but was #{coverage}%"
-          exit 1
+          abort "YARD-Coverage must be at least #{config.threshold}% but was #{coverage}%"
         end
 
         # Load `.yardstick.yml` (or {} when missing) and coerce it into
