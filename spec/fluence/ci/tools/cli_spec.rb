@@ -42,9 +42,52 @@ RSpec.describe Fluence::Ci::Tools::CLI do
     end
   end
 
-  describe 'check' do
-    it 'raises Thor::Error on unknown group' do
-      expect { described_class.start(%w[check bogus]) }.to raise_error(SystemExit)
+  describe 'group commands' do
+    it 'exposes one top-level Thor command per Steps method' do
+      Fluence::Ci::Tools::Steps.instance_methods(false).each do |group|
+        expect(described_class.commands).to have_key(group.to_s)
+      end
+    end
+
+    it 'each group command accepts a --report flag' do
+      Fluence::Ci::Tools::Steps.instance_methods(false).each do |group|
+        cmd = described_class.commands[group.to_s]
+        expect(cmd.options).to have_key(:report)
+      end
+    end
+
+    context 'dispatch to Runner' do
+      # Use a real Runner so `runner.method(group).parameters` returns
+      # the actual Steps signatures the CLI dispatch inspects. Stub
+      # `step` and `report!` so the runner doesn't shell out, and assert
+      # on the commands passed to `step` to prove the dispatch path.
+      let(:runner) do
+        Fluence::Ci::Tools::Runner.new(io: StringIO.new).tap do |r|
+          allow(r).to receive(:step)
+          allow(r).to receive(:report!)
+        end
+      end
+
+      before { allow(Fluence::Ci::Tools::Runner).to receive(:new).and_return(runner) }
+
+      it 'runs the default-mode command without --report' do
+        described_class.start(['lint'])
+        expect(runner).to have_received(:step).with('Style: rubocop', 'bundle exec rubocop')
+      end
+
+      it 'runs the report-mode command when --report is passed' do
+        described_class.start(['lint', '--report'])
+        expect(runner).to have_received(:step)
+          .with('Style: rubocop', a_string_including('tmp/fluence-report/rubocop.json'))
+      end
+
+      it 'propagates --report to every group when calling all' do
+        described_class.start(['all', '--report'])
+        expect(runner).to have_received(:step)
+          .with('Style: rubocop', a_string_including('tmp/fluence-report/rubocop.json'))
+        expect(runner).to have_received(:step)
+          .with('Quality: reek', a_string_including('tmp/fluence-report/reek.txt'))
+      end
     end
   end
 end

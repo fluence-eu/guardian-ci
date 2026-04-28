@@ -3,10 +3,12 @@
 
 # Run the Fluence CI catalog side-by-side with Rails 8's native bin/ci:
 #
-#   bin/fluence-ci             # full catalog (ruby_audit + codequality + docs + tests)
-#   bin/fluence-ci lint        # single group
+#   bin/fluence-ci                          # full catalog (alias for `all`)
+#   bin/fluence-ci all
+#   bin/fluence-ci lint                     # single group
 #   bin/fluence-ci codequality
-#   bin/ci && bin/fluence-ci   # chain with Rails native
+#   bin/fluence-ci lint --report            # machine output for CI
+#   bin/ci && bin/fluence-ci                # chain with Rails native
 #
 # Sub-commands map 1-1 onto the centralised CI workflows so the local
 # pre-push run mirrors what each `*-pr.yml` job exercises.
@@ -14,4 +16,5 @@
 require_relative '../config/boot'
 require 'fluence/ci/tools/cli'
 
-Fluence::Ci::Tools::CLI.start(['check', *ARGV])
+argv = ARGV.empty? ? %w[all] : ARGV
+Fluence::Ci::Tools::CLI.start(argv)
