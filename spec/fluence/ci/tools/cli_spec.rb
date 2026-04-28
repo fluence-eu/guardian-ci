@@ -49,10 +49,17 @@ RSpec.describe Fluence::Ci::Tools::CLI do
       end
     end
 
-    it 'each group command accepts a --report flag' do
+    it 'auto-exposes a CLI option for every Steps kwarg' do
       Fluence::Ci::Tools::Steps.instance_methods(false).each do |group|
         cmd = described_class.commands[group.to_s]
-        expect(cmd.options).to have_key(:report)
+        Fluence::Ci::Tools::Steps.instance_method(group).parameters.each do |type, name|
+          # Positional args and **rest don't map to Thor options — only
+          # `key` / `keyreq` do.
+          next unless %i[key keyreq].include?(type)
+
+          expect(cmd.options).to have_key(name),
+                                 "expected `fluence-ci #{group}` to expose --#{name}"
+        end
       end
     end
 
@@ -87,6 +94,23 @@ RSpec.describe Fluence::Ci::Tools::CLI do
           .with('Style: rubocop', a_string_including('tmp/fluence-report/rubocop.json'))
         expect(runner).to have_received(:step)
           .with('Quality: reek', a_string_including('tmp/fluence-report/reek.json'))
+      end
+
+      it 'forwards --paths to Steps#codequality' do
+        described_class.start(['codequality', '--paths', 'gems/foo lib'])
+        expect(runner).to have_received(:step)
+          .with('Quality: reek', a_string_including('gems/foo lib'))
+      end
+
+      it 'combines --paths and --report on codequality' do
+        described_class.start(['codequality', '--paths', 'app lib', '--report'])
+        expect(runner).to have_received(:step)
+          .with('Quality: reek', a_string_including('app lib').and(include('reek.json')))
+      end
+
+      it 'forwards --command to Steps#tests, bypassing auto-detection' do
+        described_class.start(['tests', '--command', 'my-runner'])
+        expect(runner).to have_received(:step).with('Tests', 'my-runner')
       end
     end
   end
