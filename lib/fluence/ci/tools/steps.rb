@@ -10,13 +10,31 @@ module Fluence
       #   * Inside `CI.run do ... end` (Rails 8's
       #     `ActiveSupport::ContinuousIntegration`): `extend` the module
       #     so `lint`, `security`, etc. delegate to the block's `step`.
-      #   * `Fluence::Ci::Tools::Runner` (pure gems): `include`s this
+      #   * {Fluence::Ci::Tools::Runner} (pure gems): `include`s this
       #     module so the runner instance exposes the same methods.
+      #
+      # @example Rails — extend the CI block
+      #   require 'fluence/ci/tools/steps'
+      #   CI.run do
+      #     extend Fluence::Ci::Tools::Steps
+      #     all
+      #   end
+      #
+      # @example Gem — include in a runner
+      #   runner = Fluence::Ci::Tools::Runner.new
+      #   runner.all
+      #   runner.report!
       module Steps
+        # Run the rubocop lint step.
+        # @return [void]
+        # @api public
         def lint
           step 'Style: rubocop', 'bundle exec rubocop'
         end
 
+        # Run the security audit suite (brakeman, bundler-audit, ruby_audit).
+        # @return [void]
+        # @api public
         def security
           step 'Security: brakeman',
                'bundle exec brakeman --quiet --no-pager --exit-on-warn --exit-on-error'
@@ -24,9 +42,15 @@ module Fluence
           step 'Security: ruby_audit',    'bundle exec ruby-audit check'
         end
 
+        # Run the code-smell suite (reek, flog, flay).
+        #
         # Defaults to `lib`, or `app lib` if an `app/` directory exists
         # (Rails app / engine). Override explicitly when neither
         # heuristic applies.
+        #
+        # @param paths [String, nil] space-separated source paths to scan
+        # @return [void]
+        # @api public
         def codequality(paths: nil)
           paths ||= Dir.exist?('app') ? 'app lib' : 'lib'
           step 'Quality: reek', "bundle exec reek --no-progress #{paths}"
@@ -34,11 +58,19 @@ module Fluence
           step 'Quality: flay', "bundle exec flay #{paths}"
         end
 
+        # Validate that the YARD documentation builds cleanly. Coverage
+        # measurement (yardstick) lives in the gem's Rakefile —
+        # consumers run `bundle exec rake doc:measure` /
+        # `doc:verify` for that, and the centralised CI workflow
+        # `ruby-gem-docs-measure` invokes those rake tasks directly.
+        # @return [void]
+        # @api public
         def docs
-          step 'Docs: yard',      'bundle exec yard doc --no-output --no-stats'
-          step 'Docs: yardstick', 'bundle exec yardstick measure'
+          step 'Docs: yard', 'bundle exec yard doc --no-output --no-stats'
         end
 
+        # Run the project's test suite(s).
+        #
         # Detects which test framework(s) the project uses based on the
         # canonical helper files and emits one `step` per framework. A
         # repo with both `spec/spec_helper.rb` and `test/test_helper.rb`
@@ -47,6 +79,10 @@ module Fluence
         #
         # Pass `command:` explicitly to bypass detection — a single step
         # is registered with that command (useful for custom runners).
+        #
+        # @param command [String, nil] explicit test command; bypasses detection
+        # @return [void]
+        # @api public
         def tests(command: nil)
           if command
             step 'Tests', command
@@ -65,10 +101,16 @@ module Fluence
         # `all`, so consumers don't have to edit their `config/ci.rb`
         # / rake task on every fluence-ci-tools release.
         #
-        # Override per-group args via a hash keyed by method name:
-        #
+        # @param overrides [Hash{Symbol => Hash}] per-group keyword
+        #   arguments. Keys are step group method names; values are
+        #   hashes forwarded as keyword args.
+        # @return [void]
+        # @example Override one group
+        #   all(codequality: { paths: 'app lib spec/support' })
+        # @example Override two groups
         #   all(codequality: { paths: 'app lib' },
         #       tests:       { command: 'bin/rails test' })
+        # @api public
         def all(**overrides)
           Steps.instance_methods(false).reject { |m| m == :all }.each do |method_name|
             args = overrides[method_name] || {}

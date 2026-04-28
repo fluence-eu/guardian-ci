@@ -1,0 +1,44 @@
+name: Ruby
+
+on:
+  push:
+    branches:
+      - main
+
+  pull_request:
+
+# Authenticate `bundle install` (triggered by ruby/setup-ruby's
+# bundler-cache: true) against GitHub Packages so private Fluence
+# gems can be fetched. Combined with `permissions: packages: read`
+# on each job, the GITHUB_TOKEN gains the scope needed and Bundler
+# picks the credentials up via this env.
+env:
+  BUNDLE_RUBYGEMS__PKG__GITHUB__COM: ${{ github.actor }}:${{ secrets.GITHUB_TOKEN }}
+
+jobs:
+  build:
+    runs-on: ubuntu-latest
+    permissions:
+      contents: read
+      packages: read
+
+    name: Ruby ${{ matrix.ruby }}
+    strategy:
+      matrix:
+        ruby:
+          # 4.0 is covered by coverage-measure.yml (spec) and
+          # rubocop-pr.yml (lint) — keep this list to the non-coverage
+          # Rubies so nothing runs twice.
+          - '3.4'
+          - '3.3'
+          - '3.2'
+
+    steps:
+      - uses: actions/checkout@v6
+      - name: Set up Ruby
+        uses: ruby/setup-ruby@v1
+        with:
+          ruby-version: ${{ matrix.ruby }}
+          bundler-cache: true
+      - name: Run specs
+        run: bundle exec rake spec

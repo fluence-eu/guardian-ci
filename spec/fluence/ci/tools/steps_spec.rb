@@ -53,9 +53,9 @@ RSpec.describe Fluence::Ci::Tools::Steps do
   end
 
   describe '#docs' do
-    it 'registers yard and yardstick' do
+    it 'registers a single yard build step' do
       host.docs
-      expect(host.steps.map(&:first)).to eq(['Docs: yard', 'Docs: yardstick'])
+      expect(host.steps.map(&:first)).to eq(['Docs: yard'])
     end
   end
 

@@ -18,10 +18,17 @@ module FluenceCi
   #     groups added to the gem are picked up by `all` automatically,
   #     so consumers don't need an `update` command.
   class InstallGenerator < Rails::Generators::Base
+    # Path inside the host Rails app where the CI definition lives.
     TARGET = 'config/ci.rb'
 
     source_root File.expand_path('templates', __dir__)
 
+    # Copy or inject the Fluence CI scaffold into the host app. Picks
+    # the right strategy based on whether `config/ci.rb` already
+    # exists. Idempotent on subsequent runs.
+    #
+    # @return [void]
+    # @api public
     def install
       if File.exist?(File.join(destination_root, TARGET))
         inject_fluence_steps
@@ -32,6 +39,10 @@ module FluenceCi
 
     private
 
+    # Inject the Fluence steps into an existing config/ci.rb. Skips
+    # when the file already references the Steps mixin.
+    # @return [void]
+    # @api private
     def inject_fluence_steps
       content = File.read(File.join(destination_root, TARGET))
       if content.include?('Fluence::Ci::Tools::Steps')
@@ -44,6 +55,9 @@ module FluenceCi
       inject_into_file TARGET, fluence_block, before: /^end$/
     end
 
+    # The Ruby block injected into the consumer's config/ci.rb.
+    # @return [String]
+    # @api private
     def fluence_block
       <<~RUBY
 
