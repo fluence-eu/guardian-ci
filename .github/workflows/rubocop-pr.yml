@@ -12,3 +12,4 @@ jobs:
       contents: read
       pull-requests: write
       actions: read
+      packages: read

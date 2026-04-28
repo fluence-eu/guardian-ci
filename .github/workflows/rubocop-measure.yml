@@ -9,3 +9,4 @@ jobs:
     uses: fluence-eu/ci-workflows/.github/workflows/ruby-gem-rubocop-measure.yml@v2
     permissions:
       contents: read
+      packages: read
