@@ -1,6 +1,22 @@
 # Changelog
 
 All notable changes to this project will be documented in this file.
+## [0.2.0] - 2026-04-28
+
+### Build
+
+- build: add benchmark runtime dep for undercover on Ruby 3.5+
+
+### CI
+
+- ci: grant `packages: read` on @v2 wrappers (fix startup_failure)
+- ci: add workflow_dispatch to publish.yml for manual republish
+- ci: forward RELEASE_APP_PRIVATE_KEY to release.yml
+
+### Documentation
+
+- docs: refresh README pins + add CONTRIBUTING.md
+
 ## [0.1.1] - 2026-04-28
 
 ### Other
