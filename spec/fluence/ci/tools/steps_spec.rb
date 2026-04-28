@@ -68,11 +68,11 @@ RSpec.describe Fluence::Ci::Tools::Steps do
       expect(host.steps.last.last).to include('app lib')
     end
 
-    it 'tees each tool to tmp/fluence-report in report mode' do
+    it 'emits machine-readable reports under tmp/fluence-report in report mode' do
       Dir.mktmpdir do |dir|
         Dir.chdir(dir) { host.codequality(report: true) }
         commands = host.steps.map(&:last)
-        expect(commands[0]).to include('tee tmp/fluence-report/reek.txt')
+        expect(commands[0]).to include('--format json').and(include('> tmp/fluence-report/reek.json'))
         expect(commands[1]).to include('tee tmp/fluence-report/flog.txt')
         expect(commands[2]).to include('tee tmp/fluence-report/flay.txt')
       end
@@ -85,9 +85,12 @@ RSpec.describe Fluence::Ci::Tools::Steps do
       expect(host.steps.map(&:first)).to eq(['Docs: yard'])
     end
 
-    it 'invokes rake doc:measure in report mode' do
+    it 'invokes the in-process YardstickRunner in report mode' do
       host.docs(report: true)
-      expect(host.steps).to eq([['Docs: yardstick', 'bundle exec rake doc:measure']])
+      expect(host.steps.size).to eq(1)
+      label, command = host.steps.first
+      expect(label).to eq('Docs: yardstick')
+      expect(command).to include('Fluence::Ci::Tools::YardstickRunner.run!')
     end
   end
 
@@ -182,8 +185,8 @@ RSpec.describe Fluence::Ci::Tools::Steps do
       commands = host.steps.map(&:last)
       expect(commands).to include(a_string_matching(%r{tmp/fluence-report/rubocop\.json}))
       expect(commands).to include(a_string_matching(%r{tmp/fluence-report/brakeman\.json}))
-      expect(commands).to include(a_string_matching(%r{tmp/fluence-report/reek\.txt}))
-      expect(commands).to include(a_string_matching('rake doc:measure'))
+      expect(commands).to include(a_string_matching(%r{tmp/fluence-report/reek\.json}))
+      expect(commands).to include(a_string_matching('Fluence::Ci::Tools::YardstickRunner.run!'))
     end
 
     it 'lets per-group overrides win over the global report flag' do
