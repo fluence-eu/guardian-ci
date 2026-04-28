@@ -103,22 +103,38 @@ Writes `lib/tasks/fluence_ci.rake` with one task per step group plus a `fluence_
 ### Running checks ad-hoc
 
 ```bash
-bundle exec fluence-ci check              # full catalog
-bundle exec fluence-ci check lint         # single group
+bundle exec fluence-ci all                # full catalog
+bundle exec fluence-ci lint               # single group
 bundle exec fluence-ci version
 ```
 
+Each group command (and `all`) accepts `--report` to switch from human-readable console output to machine-readable artefacts under standardised paths — the same files the centralised [`fluence-eu/ci-workflows`](https://github.com/fluence-eu/ci-workflows) reusables consume:
+
+```bash
+bundle exec fluence-ci lint --report          # tmp/fluence-report/rubocop.json
+bundle exec fluence-ci security --report      # tmp/fluence-report/{brakeman.json,audit.txt,ruby_audit.txt}
+bundle exec fluence-ci codequality --report   # tmp/fluence-report/{reek.json,flog.txt,flay.txt}
+bundle exec fluence-ci docs --report          # doc/yardstick_report.txt (in-process measure + threshold check)
+bundle exec fluence-ci all --report           # propagates --report to every group that accepts it
+```
+
+Coverage for `tests` is captured automatically by SimpleCov when configured in the consumer's `spec_helper`, so `tests` does not take `--report`.
+
 ### Step groups
 
-| Group | What it runs |
-|---|---|
-| `lint` | `rubocop` |
-| `security` | `brakeman` + `bundler-audit` + `ruby-audit` |
-| `codequality` | `reek` + `flog` + `flay` |
-| `docs` | `yard` + `yardstick` |
-| `tests` | `rspec` (overridable to `bin/rails test`) |
+| Group | Default mode | `--report` mode |
+|---|---|---|
+| `lint` | `rubocop` | `rubocop --format json --out tmp/fluence-report/rubocop.json` |
+| `security` | `brakeman` + `bundler-audit` + `ruby-audit` | same trio, machine-readable outputs under `tmp/fluence-report/` |
+| `codequality` | `reek` + `flog` + `flay` | same trio, JSON / text outputs under `tmp/fluence-report/` |
+| `docs` | `yard doc --no-output --no-stats` (build smoke test) | in-process `Fluence::Ci::Tools::YardstickRunner` — reads `.yardstick.yml`, writes `doc/yardstick_report.txt`, exits 1 below threshold (no consumer Rakefile dependency) |
+| `tests` | `rspec` (overridable to `bin/rails test`) | n/a — coverage is produced as a SimpleCov side effect |
 
 To customise, edit the generated `bin/fluence-ci` (Rails) or `lib/tasks/fluence_ci.rake` (gem). Both files are plain Ruby — instantiate the Runner and call individual groups directly instead of `runner.all`, or pass per-group overrides like `runner.all(codequality: { paths: 'app lib' })`.
+
+#### Replacing custom Rakefile boilerplate
+
+Now that `docs --report` is self-sufficient (no `rake doc:measure` / `rake doc:verify` required), consumers can drop the entire `namespace :doc` block from their Rakefile. The centralised `ruby-gem-docs-measure` workflow invokes `bundle exec fluence-ci docs --report` directly; HTML deploy still calls `bundle exec yard doc` from the yard CLI itself, also Rakefile-free.
 
 ## Development
 
