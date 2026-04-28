@@ -32,15 +32,13 @@ RSpec.describe FluenceCi::InstallGenerator do
       expect(File.executable?(target)).to be true
     end
 
-    it 'ships a script that uses Fluence::Ci::Tools::Runner' do
+    it 'ships a script that delegates to Fluence::Ci::Tools::CLI' do
       run_generator
       target = File.join(tmpdir, 'bin/fluence-ci')
       content = File.read(target)
       expect(content).to include('#!/usr/bin/env ruby')
-      expect(content).to include("require 'fluence/ci/tools/runner'")
-      expect(content).to include('Fluence::Ci::Tools::Runner.new')
-      expect(content).to include('runner.all')
-      expect(content).to include('runner.report!')
+      expect(content).to include("require 'fluence/ci/tools/cli'")
+      expect(content).to include("Fluence::Ci::Tools::CLI.start(['check', *ARGV])")
     end
 
     it 'does not touch config/ci.rb' do
