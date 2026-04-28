@@ -1,6 +1,24 @@
 # Changelog
 
 All notable changes to this project will be documented in this file.
+## [0.5.0] - 2026-04-28
+
+### Added
+
+- feat(steps): align codequality + docs report mode with ci-workflows v3
+
+### CI
+
+- ci(main): gate matrix steps with if:, not job-level
+
+### Refactored
+
+- refactor(yardstick_runner): drop unused parity helpers
+
+### Tests
+
+- test(yardstick_runner): cover happy path, threshold failure, missing yml
+
 ## [0.4.0] - 2026-04-28
 
 ### Added
