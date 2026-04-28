@@ -35,20 +35,21 @@ Gem::Specification.new do |spec|
   spec.executables = spec.files.grep(%r{\Aexe/}) { |f| File.basename(f) }
   spec.require_paths = ['lib']
 
-  # Tools shipped to the consumer's :development, :test bundle. Pins
-  # match those of the fluence-eu/ci-workflows reusables so the local
-  # runs and CI runs hit the same tool versions.
-  spec.add_dependency 'brakeman'
-  spec.add_dependency 'bundler-audit'
+  # Tools shipped to the consumer's :development, :test bundle. Every
+  # tool is pinned at major.minor to keep the baseline/delta numbers
+  # the centralised CI workflows surface stable across runs — same
+  # rationale as rubocop's ~> 1.21 pin.
+  spec.add_dependency 'brakeman', '~> 8.0'
+  spec.add_dependency 'bundler-audit', '~> 0.9'
   spec.add_dependency 'flay', '~> 2.14'
   spec.add_dependency 'flog', '~> 4.9'
   spec.add_dependency 'reek', '~> 6.5'
   spec.add_dependency 'rubocop', '~> 1.21'
-  spec.add_dependency 'rubocop-rails-omakase'
-  spec.add_dependency 'rubocop-rspec'
+  spec.add_dependency 'rubocop-rails-omakase', '~> 1.1'
+  spec.add_dependency 'rubocop-rspec', '~> 3.0'
   spec.add_dependency 'ruby_audit', '~> 3.1'
-  spec.add_dependency 'simplecov'
-  spec.add_dependency 'undercover'
+  spec.add_dependency 'simplecov', '~> 0.22'
+  spec.add_dependency 'undercover', '~> 0.8'
   spec.add_dependency 'yard', '~> 0.9'
   spec.add_dependency 'yardstick', '~> 0.9'
 end
