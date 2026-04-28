@@ -19,53 +19,36 @@ RSpec.describe FluenceCi::InstallGenerator do
     $stdout = original
   end
 
-  context 'greenfield (no config/ci.rb)' do
-    it 'copies the full template to config/ci.rb' do
+  describe '#install' do
+    it 'copies bin/fluence-ci into the host app' do
       run_generator
-      target = File.join(tmpdir, 'config/ci.rb')
+      target = File.join(tmpdir, 'bin/fluence-ci')
       expect(File.exist?(target)).to be true
+    end
+
+    it 'marks bin/fluence-ci as executable' do
+      run_generator
+      target = File.join(tmpdir, 'bin/fluence-ci')
+      expect(File.executable?(target)).to be true
+    end
+
+    it 'ships a script that uses Fluence::Ci::Tools::Runner' do
+      run_generator
+      target = File.join(tmpdir, 'bin/fluence-ci')
       content = File.read(target)
-      expect(content).to include("require 'fluence/ci/tools/steps'")
-      expect(content).to include('extend Fluence::Ci::Tools::Steps')
-      expect(content).to include('all')
-    end
-  end
-
-  context 'existing config/ci.rb (Rails 8.1+ default)' do
-    let(:rails_default) do
-      <<~RUBY
-        # Run using bin/ci
-
-        CI.run do
-          step 'Setup', 'bin/setup --skip-server'
-          step 'Style: Ruby', 'bin/rubocop'
-          step 'Security: Gem audit', 'bin/bundler-audit'
-        end
-      RUBY
+      expect(content).to include('#!/usr/bin/env ruby')
+      expect(content).to include("require 'fluence/ci/tools/runner'")
+      expect(content).to include('Fluence::Ci::Tools::Runner.new')
+      expect(content).to include('runner.all')
+      expect(content).to include('runner.report!')
     end
 
-    before do
+    it 'does not touch config/ci.rb' do
       FileUtils.mkdir_p(File.join(tmpdir, 'config'))
-      File.write(File.join(tmpdir, 'config/ci.rb'), rails_default)
-    end
-
-    it 'injects require + extend + all without removing existing steps' do
+      original = "CI.run do\n  step 'X', 'cmd'\nend\n"
+      File.write(File.join(tmpdir, 'config/ci.rb'), original)
       run_generator
-      content = File.read(File.join(tmpdir, 'config/ci.rb'))
-      expect(content).to include("require 'fluence/ci/tools/steps'")
-      expect(content).to include('extend Fluence::Ci::Tools::Steps')
-      expect(content).to include('all')
-      # Rails defaults preserved.
-      expect(content).to include("step 'Setup', 'bin/setup --skip-server'")
-      expect(content).to include("step 'Style: Ruby', 'bin/rubocop'")
-    end
-
-    it 'is idempotent on a second run' do
-      run_generator
-      first = File.read(File.join(tmpdir, 'config/ci.rb'))
-      run_generator
-      second = File.read(File.join(tmpdir, 'config/ci.rb'))
-      expect(second).to eq(first)
+      expect(File.read(File.join(tmpdir, 'config/ci.rb'))).to eq(original)
     end
   end
 end

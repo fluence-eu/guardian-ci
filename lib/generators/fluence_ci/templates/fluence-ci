@@ -1,0 +1,21 @@
+#!/usr/bin/env ruby
+# frozen_string_literal: true
+
+# Run the Fluence CI catalog (ruby_audit + codequality + docs + tests)
+# side-by-side with Rails 8's native `bin/ci`. Chain them on pre-push:
+#
+#   bin/ci && bin/fluence-ci
+#
+# `runner.all` dispatches dynamically over `Fluence::Ci::Tools::Steps`,
+# so a `bundle update fluence-ci-tools` that adds a new step group
+# picks it up here automatically — no edit to this file required.
+# Override per-group args via:
+#
+#   runner.all(codequality: { paths: 'app lib' })
+
+require_relative '../config/boot'
+require 'fluence/ci/tools/runner'
+
+runner = Fluence::Ci::Tools::Runner.new
+runner.all
+runner.report!

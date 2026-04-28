@@ -87,9 +87,10 @@ The gem ships an `fluence-ci` executable plus a Rails generator that scaffolds t
 **Rails app**:
 ```bash
 bin/rails generate fluence_ci:install
-bin/ci                                    # Rails 8's native runner
+bin/fluence-ci                            # Fluence catalog
+bin/ci && bin/fluence-ci                  # Or chain with Rails native
 ```
-Writes `config/ci.rb` consumed by Rails 8's `bin/ci` (`ActiveSupport::ContinuousIntegration`).
+Writes a standalone executable `bin/fluence-ci` that runs the Fluence catalog via `Fluence::Ci::Tools::Runner`. **Does not touch `config/ci.rb`** — Rails 8's native `bin/ci` keeps running its defaults (rubocop, brakeman, bundler-audit) untouched, and `bin/fluence-ci` adds the Fluence-specific checks (ruby_audit, codequality, docs, tests) side-by-side. No duplication.
 
 **Pure gem**:
 ```bash
@@ -117,7 +118,7 @@ bundle exec fluence-ci version
 | `docs` | `yard` + `yardstick` |
 | `tests` | `rspec` (overridable to `bin/rails test`) |
 
-To customise, edit the generated `config/ci.rb` (Rails) or `lib/tasks/fluence_ci.rake` (gem) — they're plain Ruby and you can mix Fluence groups with project-specific `step` calls.
+To customise, edit the generated `bin/fluence-ci` (Rails) or `lib/tasks/fluence_ci.rake` (gem). Both files are plain Ruby — instantiate the Runner and call individual groups directly instead of `runner.all`, or pass per-group overrides like `runner.all(codequality: { paths: 'app lib' })`.
 
 ## Development
 
