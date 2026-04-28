@@ -17,9 +17,10 @@ module Fluence
       #
       #   * lint        → tmp/fluence-report/rubocop.json
       #   * security    → tmp/fluence-report/{brakeman.json,audit.txt,ruby_audit.txt}
-      #   * codequality → tmp/fluence-report/{reek,flog,flay}.txt
-      #   * docs        → doc/yardstick_report.txt (via `rake doc:measure`,
-      #     path controlled by the consumer's Rakefile + `.yardstick.yml`)
+      #   * codequality → tmp/fluence-report/{reek.json,flog.txt,flay.txt}
+      #   * docs        → doc/yardstick_report.txt (via the in-process
+      #     {Fluence::Ci::Tools::YardstickRunner} — no consumer Rakefile
+      #     dependency; honours `.yardstick.yml`)
       #
       # `tests` does not take `report:` — coverage is captured as a
       # side effect by SimpleCov's spec_helper integration, the same
@@ -77,8 +78,12 @@ module Fluence
           paths ||= Dir.exist?('app') ? 'app lib' : 'lib'
           Steps.ensure_report_dir if report
           if report
-            step 'Quality: reek', "bundle exec reek --no-progress #{paths} | tee #{REPORT_DIR}/reek.txt"
-            step 'Quality: flog', "bundle exec flog -m -s #{paths} | tee #{REPORT_DIR}/flog.txt"
+            # Reek emits JSON via --format so the centralized
+            # codequality-report composite can diff smells via
+            # (source, context, smell_type) tuples. Flog/flay text
+            # output is dumped via `tee`.
+            step 'Quality: reek', "bundle exec reek --format json #{paths} > #{REPORT_DIR}/reek.json"
+            step 'Quality: flog', "bundle exec flog #{paths} | tee #{REPORT_DIR}/flog.txt"
             step 'Quality: flay', "bundle exec flay #{paths} | tee #{REPORT_DIR}/flay.txt"
           else
             step 'Quality: reek', "bundle exec reek --no-progress #{paths}"
@@ -99,16 +104,20 @@ module Fluence
         end
 
         # Validate documentation. Default mode runs `yard doc` to ensure
-        # the docs build cleanly. Report mode runs `rake doc:measure`
-        # which honours `.yardstick.yml` and writes the coverage report
-        # to `doc/yardstick_report.txt`.
+        # the docs build cleanly. Report mode invokes the in-process
+        # {Fluence::Ci::Tools::YardstickRunner} which reads
+        # `.yardstick.yml`, writes `doc/yardstick_report.txt`, and exits
+        # 1 below the configured threshold — no consumer Rakefile
+        # dependency.
         #
-        # @param report [Boolean] when true, run yardstick measurement
+        # @param report [Boolean] when true, run yardstick measurement + verify
         # @return [void]
         # @api public
         def docs(report: false)
           if report
-            step 'Docs: yardstick', 'bundle exec rake doc:measure'
+            step 'Docs: yardstick',
+                 'bundle exec ruby -r fluence/ci/tools/yardstick_runner ' \
+                 "-e 'Fluence::Ci::Tools::YardstickRunner.run!'"
           else
             step 'Docs: yard', 'bundle exec yard doc --no-output --no-stats'
           end

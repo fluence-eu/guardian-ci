@@ -86,7 +86,7 @@ RSpec.describe Fluence::Ci::Tools::CLI do
         expect(runner).to have_received(:step)
           .with('Style: rubocop', a_string_including('tmp/fluence-report/rubocop.json'))
         expect(runner).to have_received(:step)
-          .with('Quality: reek', a_string_including('tmp/fluence-report/reek.txt'))
+          .with('Quality: reek', a_string_including('tmp/fluence-report/reek.json'))
       end
     end
   end
