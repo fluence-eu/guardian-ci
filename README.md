@@ -78,9 +78,46 @@ After `bundle install`, the resolved versions in `Gemfile.lock` should be the sa
 
 A pure gem like `fluence-gateway-client` won't actually invoke `brakeman` (Rails-specific) but the gem is still installed in its bundle. Disk + install-time cost is small enough not to matter; if it ever does, the tooling can be split into `fluence-ci-tools-gem` / `fluence-ci-tools-rails` sub-gems.
 
-## Generator (Phase 2)
+## Generator and CLI
 
-A future release will ship a Thor + Railtie generator that scaffolds project-local binstubs (`bin/rubocop`, `bin/ruby-audit`, …) and a `bin/ci` wrapper that mirrors the CI checks. Track [Phase 2](https://github.com/fluence-eu/fluence-ci-tools/issues) for progress.
+The gem ships an `fluence-ci` executable plus a Rails generator that scaffolds the local CI orchestration. Both delegate to the same `Fluence::Ci::Tools::Steps` catalog, so the local pre-push run mirrors what the centralised CI workflows execute.
+
+### Installing the local CI scaffold
+
+**Rails app**:
+```bash
+bin/rails generate fluence_ci:install
+bin/ci                                    # Rails 8's native runner
+```
+Writes `config/ci.rb` consumed by Rails 8's `bin/ci` (`ActiveSupport::ContinuousIntegration`).
+
+**Pure gem**:
+```bash
+bundle exec fluence-ci install
+bundle exec rake fluence_ci:check         # full catalog
+bundle exec rake fluence_ci:lint          # single group
+```
+Writes `lib/tasks/fluence_ci.rake` with one task per step group plus a `fluence_ci:check` aggregate.
+
+### Running checks ad-hoc
+
+```bash
+bundle exec fluence-ci check              # full catalog
+bundle exec fluence-ci check lint         # single group
+bundle exec fluence-ci version
+```
+
+### Step groups
+
+| Group | What it runs |
+|---|---|
+| `lint` | `rubocop` |
+| `security` | `brakeman` + `bundler-audit` + `ruby-audit` |
+| `codequality` | `reek` + `flog` + `flay` |
+| `docs` | `yard` + `yardstick` |
+| `tests` | `rspec` (overridable to `bin/rails test`) |
+
+To customise, edit the generated `config/ci.rb` (Rails) or `lib/tasks/fluence_ci.rake` (gem) — they're plain Ruby and you can mix Fluence groups with project-specific `step` calls.
 
 ## Development
 

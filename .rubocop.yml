@@ -14,3 +14,10 @@ Metrics/BlockLength:
   Exclude:
     - 'fluence-ci-tools.gemspec'
     - 'spec/**/*'
+
+# Bundler resolves `gem 'fluence-ci-tools'` to `lib/fluence-ci-tools.rb`,
+# so the hyphenated filename is mandatory and the snake_case rule
+# does not apply.
+Naming/FileName:
+  Exclude:
+    - 'lib/fluence-ci-tools.rb'
