@@ -1,6 +1,21 @@
 # Changelog
 
 All notable changes to this project will be documented in this file.
+## [0.3.0] - 2026-04-28
+
+### Added
+
+- feat: ship install generator, fluence-ci CLI, and Steps/Runner catalog (Phase 2)
+
+### CI
+
+- ci: activate consumer-style quality gates and 100% YARD coverage
+
+### Tests
+
+- test: add multi-Rails matrix and integration specs for CLI + generator
+- test: configure SimpleCov + Undercover formatter in spec_helper
+
 ## [0.2.0] - 2026-04-28
 
 ### Build
