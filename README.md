@@ -33,6 +33,7 @@ Then `bundle install`. Authentication to GitHub Packages is the same as for the 
 | `yardstick` | `~> 0.9` | Documentation-coverage gate |
 | `simplecov` | `~> 0.22` | Test-coverage collector |
 | `undercover` | `~> 0.8` | Coverage delta vs base branch |
+| `benchmark` | `~> 0.4` | Required by `undercover` on Ruby 3.5+ where it left the stdlib |
 
 Every dependency is pinned at major.minor. Same rationale as the centralised workflows: `~> X.Y` keeps the baseline/delta numbers reported by the sticky CI comments stable across runs while still letting patch-level fixes through. To bump a tool, change it here once and all consumers receive the new version on `bundle update fluence-ci-tools`.
 

@@ -39,6 +39,9 @@ Gem::Specification.new do |spec|
   # tool is pinned at major.minor to keep the baseline/delta numbers
   # the centralised CI workflows surface stable across runs — same
   # rationale as rubocop's ~> 1.21 pin.
+  # Required by undercover on Ruby 3.5+ where benchmark left the stdlib.
+  # Declared here so consumers don't have to add it themselves.
+  spec.add_dependency 'benchmark', '~> 0.4'
   spec.add_dependency 'brakeman', '~> 8.0'
   spec.add_dependency 'bundler-audit', '~> 0.9'
   spec.add_dependency 'flay', '~> 2.14'
