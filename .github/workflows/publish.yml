@@ -1,0 +1,14 @@
+name: Publish Gem
+
+on:
+  release:
+    types: [published]
+
+jobs:
+  publish:
+    uses: fluence-eu/ci-workflows/.github/workflows/ruby-gem-publish.yml@v2
+    with:
+      gem_name: fluence-ci-tools
+    permissions:
+      contents: read
+      packages: write

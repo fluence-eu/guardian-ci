@@ -1,0 +1,16 @@
+AllCops:
+  TargetRubyVersion: 3.2
+  NewCops: enable
+
+Style/StringLiterals:
+  EnforcedStyle: single_quotes
+
+Style/StringLiteralsInInterpolation:
+  EnforcedStyle: single_quotes
+
+# The gemspec has 13 add_dependency lines plus metadata — the
+# block legitimately exceeds the default cap.
+Metrics/BlockLength:
+  Exclude:
+    - 'fluence-ci-tools.gemspec'
+    - 'spec/**/*'

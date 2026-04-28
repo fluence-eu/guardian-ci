@@ -1,0 +1,18 @@
+name: Release
+
+on:
+  # Only fires on pushes that touch the version file — i.e. when a
+  # release PR is merged. Feature merges don't match, so the workflow
+  # never produces ghost "all jobs skipped" runs.
+  push:
+    branches: [main]
+    paths:
+      - lib/fluence/ci/tools/version.rb
+
+jobs:
+  release:
+    uses: fluence-eu/ci-workflows/.github/workflows/ruby-gem-release.yml@v2
+    with:
+      gem_name: fluence-ci-tools
+    permissions:
+      contents: write

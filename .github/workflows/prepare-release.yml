@@ -1,0 +1,25 @@
+name: Prepare Release PR
+
+on:
+  workflow_dispatch:
+    inputs:
+      bump:
+        description: Version bump type
+        required: true
+        type: choice
+        options:
+          - patch
+          - minor
+          - major
+
+jobs:
+  prepare:
+    uses: fluence-eu/ci-workflows/.github/workflows/ruby-gem-prepare-release.yml@v2
+    with:
+      gem_name: fluence-ci-tools
+      version_file: lib/fluence/ci/tools/version.rb
+      bump: ${{ inputs.bump }}
+    secrets:
+      RELEASE_APP_PRIVATE_KEY: ${{ secrets.RELEASE_APP_PRIVATE_KEY }}
+    permissions:
+      contents: read
