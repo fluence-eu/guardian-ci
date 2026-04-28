@@ -14,5 +14,10 @@ jobs:
     uses: fluence-eu/ci-workflows/.github/workflows/ruby-gem-release.yml@v2
     with:
       gem_name: fluence-ci-tools
+    secrets:
+      # Forwarded so `gh release create` runs with the App's installation
+      # token. App-issued release events trigger downstream `publish.yml`
+      # — which `secrets.GITHUB_TOKEN` does not (GitHub anti-loop rule).
+      RELEASE_APP_PRIVATE_KEY: ${{ secrets.RELEASE_APP_PRIVATE_KEY }}
     permissions:
       contents: write
