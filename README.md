@@ -21,20 +21,47 @@ Then `bundle install`. Authentication to GitHub Packages is the same as for the 
 | Tool | Version pin | Purpose |
 |---|---|---|
 | `rubocop` | `~> 1.21` | Style + correctness lint |
-| `rubocop-rails-omakase` | (latest) | Omakase rules for Rails apps |
-| `rubocop-rspec` | (latest) | RSpec-specific cops |
-| `brakeman` | (latest) | Rails static security analysis |
-| `bundler-audit` | (latest) | Gem CVE scanner |
+| `rubocop-rails-omakase` | `~> 1.1` | Omakase rules for Rails apps |
+| `rubocop-rspec` | `~> 3.0` | RSpec-specific cops |
+| `brakeman` | `~> 8.0` | Rails static security analysis |
+| `bundler-audit` | `~> 0.9` | Gem CVE scanner |
 | `ruby_audit` | `~> 3.1` | Ruby/RubyGems CVE scanner |
 | `reek` | `~> 6.5` | Design-smell detector |
 | `flog` | `~> 4.9` | Cyclomatic complexity scorer |
 | `flay` | `~> 2.14` | Code-duplication scorer |
 | `yard` | `~> 0.9` | Documentation generator |
 | `yardstick` | `~> 0.9` | Documentation-coverage gate |
-| `simplecov` | (latest) | Test-coverage collector |
-| `undercover` | (latest) | Coverage delta vs base branch |
+| `simplecov` | `~> 0.22` | Test-coverage collector |
+| `undercover` | `~> 0.8` | Coverage delta vs base branch |
 
-Pins follow the same rationale as the centralized workflows: `~> X.Y` keeps the baseline/delta numbers reported by the sticky CI comments stable across runs while still letting patch-level fixes through.
+Every dependency is pinned at major.minor. Same rationale as the centralised workflows: `~> X.Y` keeps the baseline/delta numbers reported by the sticky CI comments stable across runs while still letting patch-level fixes through. To bump a tool, change it here once and all consumers receive the new version on `bundle update fluence-ci-tools`.
+
+## Migrating from individual gems
+
+If your repo currently lists these tools individually in its `Gemfile` (typical for the existing Fluence gems), you can replace the lot with a single line:
+
+```diff
+ group :development, :test do
+-  gem 'rubocop', '~> 1.21'
+-  gem 'rubocop-rails-omakase'
+-  gem 'rubocop-rspec'
+-  gem 'brakeman', require: false
+-  gem 'bundler-audit', require: false
+-  gem 'ruby_audit', require: false
+-  gem 'reek', '~> 6.5', require: false
+-  gem 'flog', '~> 4.9', require: false
+-  gem 'flay', '~> 2.14', require: false
+-  gem 'yard', '~> 0.9', require: false
+-  gem 'yardstick', '~> 0.9', require: false
+-  gem 'simplecov', require: false
+-  gem 'undercover', require: false
++  source 'https://rubygems.pkg.github.com/fluence-eu' do
++    gem 'fluence-ci-tools', require: false
++  end
+ end
+```
+
+After `bundle install`, the resolved versions in `Gemfile.lock` should be the same or newer. If a stricter pin clashes with a constraint your project absolutely needs, the workaround is to keep that one tool inline and let Bundler's resolver take the intersection.
 
 ## Mapping to ci-workflows reusables
 
