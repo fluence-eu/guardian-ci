@@ -103,13 +103,12 @@ module Fluence
           FileUtils.mkdir_p(REPORT_DIR)
         end
 
-        # Validate documentation. Default mode runs `yard doc` to
-        # ensure the docs build cleanly. Report mode invokes the gem's
-        # in-process {Fluence::Ci::Tools::YardstickRunner} which
-        # replicates `Yardstick::Rake::Measurement` + `Verify` without
-        # requiring the consumer to ship those rake tasks in its
-        # Rakefile. Reads `.yardstick.yml` for threshold/rules, writes
-        # `doc/yardstick_report.txt`, and exits 1 below threshold.
+        # Validate documentation. Default mode runs `yard doc` to ensure
+        # the docs build cleanly. Report mode invokes the in-process
+        # {Fluence::Ci::Tools::YardstickRunner} which reads
+        # `.yardstick.yml`, writes `doc/yardstick_report.txt`, and exits
+        # 1 below the configured threshold — no consumer Rakefile
+        # dependency.
         #
         # @param report [Boolean] when true, run yardstick measurement + verify
         # @return [void]
