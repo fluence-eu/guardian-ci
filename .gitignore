@@ -12,6 +12,8 @@
 
 # Gem libraries should not commit Gemfile.lock
 Gemfile.lock
+# Same rationale for the Appraisal-generated locks.
+/gemfiles/*.gemfile.lock
 
 # Built gem artifact from `gem build`
 *.gem
