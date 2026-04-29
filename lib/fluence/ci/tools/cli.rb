@@ -25,6 +25,13 @@ module Fluence
       class CLI < Thor
         TEMPLATES = File.expand_path('../../../generators/fluence_ci/templates', __dir__)
 
+        # Steps kwargs that map to a Thor boolean flag rather than a
+        # string. Extend this when a new boolean kwarg is added to a
+        # Steps method (Ruby's reflection doesn't expose default
+        # values, so the type can't be auto-derived from
+        # `instance_method(...).parameters`).
+        BOOLEAN_KWARGS = %i[report build].freeze
+
         # Tell Thor to exit non-zero when a `Thor::Error` is raised
         # instead of just printing the message and returning 0.
         # @return [Boolean] always true here
@@ -49,9 +56,11 @@ module Fluence
             # exposed through Thor without a per-method shim.
             next unless %i[key keyreq].include?(type)
 
-            if name == :report
-              option :report, type: :boolean, default: false,
-                              desc: 'Emit machine-readable artefact instead of console output'
+            if BOOLEAN_KWARGS.include?(name)
+              desc_text = name == :report ?
+                            'Emit machine-readable artefact instead of console output' :
+                            "Forward `#{name}: true` to Steps##{group}"
+              option name, type: :boolean, default: false, desc: desc_text
             else
               option name, type: :string,
                            desc: "Forward `#{name}:` kwarg to Steps##{group}"
