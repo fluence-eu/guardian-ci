@@ -103,21 +103,33 @@ module Fluence
           FileUtils.mkdir_p(REPORT_DIR)
         end
 
-        # Validate documentation. Default mode runs `yard doc` to ensure
-        # the docs build cleanly. Report mode invokes the in-process
-        # {Fluence::Ci::Tools::YardstickRunner} which reads
-        # `.yardstick.yml`, writes `doc/yardstick_report.txt`, and exits
-        # 1 below the configured threshold — no consumer Rakefile
-        # dependency.
+        # Validate, build, or measure documentation. Three orthogonal
+        # modes (`report:` wins over `build:`, default is the smoke
+        # parse):
         #
+        #   * default          — `yard doc --no-output --no-stats`, a
+        #     parse-only smoke check that the docstrings compile. No
+        #     HTML, no stats, no threshold gate. Used by local pre-push
+        #     and the consumer's main matrix.
+        #   * `build: true`    — `yard doc`, produces the HTML site
+        #     under `doc/`. Used by `ruby-gem-docs-deploy.yml`.
+        #   * `report: true`   — invokes the in-process
+        #     {Fluence::Ci::Tools::YardstickRunner} which reads
+        #     `.yardstick.yml`, writes `doc/yardstick_report.txt`, and
+        #     exits 1 below threshold. Used by
+        #     `ruby-gem-docs-measure.yml`.
+        #
+        # @param build [Boolean] when true, build the HTML site (ignored when `report:` is true)
         # @param report [Boolean] when true, run yardstick measurement + verify
         # @return [void]
         # @api public
-        def docs(report: false)
+        def docs(build: false, report: false)
           if report
             step 'Docs: yardstick',
                  'bundle exec ruby -r fluence/ci/tools/yardstick_runner ' \
                  "-e 'Fluence::Ci::Tools::YardstickRunner.run!'"
+          elsif build
+            step 'Docs: yard build', 'bundle exec yard doc'
           else
             step 'Docs: yard', 'bundle exec yard doc --no-output --no-stats'
           end

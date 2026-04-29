@@ -80,9 +80,14 @@ RSpec.describe Fluence::Ci::Tools::Steps do
   end
 
   describe '#docs' do
-    it 'registers a single yard build step' do
+    it 'registers a parse-smoke yard step in default mode' do
       host.docs
-      expect(host.steps.map(&:first)).to eq(['Docs: yard'])
+      expect(host.steps).to eq([['Docs: yard', 'bundle exec yard doc --no-output --no-stats']])
+    end
+
+    it 'registers a HTML build step when build: true' do
+      host.docs(build: true)
+      expect(host.steps).to eq([['Docs: yard build', 'bundle exec yard doc']])
     end
 
     it 'invokes the in-process YardstickRunner in report mode' do
@@ -91,6 +96,11 @@ RSpec.describe Fluence::Ci::Tools::Steps do
       label, command = host.steps.first
       expect(label).to eq('Docs: yardstick')
       expect(command).to include('Fluence::Ci::Tools::YardstickRunner.run!')
+    end
+
+    it 'lets report: take precedence over build:' do
+      host.docs(build: true, report: true)
+      expect(host.steps.first.first).to eq('Docs: yardstick')
     end
   end
 

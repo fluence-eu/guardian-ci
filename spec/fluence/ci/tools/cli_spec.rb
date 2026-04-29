@@ -112,6 +112,17 @@ RSpec.describe Fluence::Ci::Tools::CLI do
         described_class.start(['tests', '--command', 'my-runner'])
         expect(runner).to have_received(:step).with('Tests', 'my-runner')
       end
+
+      it 'forwards --build to Steps#docs (HTML site, no --no-output)' do
+        described_class.start(['docs', '--build'])
+        expect(runner).to have_received(:step).with('Docs: yard build', 'bundle exec yard doc')
+      end
+
+      it 'lets --report take precedence when both --build and --report are passed' do
+        described_class.start(['docs', '--build', '--report'])
+        expect(runner).to have_received(:step)
+          .with('Docs: yardstick', a_string_including('Fluence::Ci::Tools::YardstickRunner.run!'))
+      end
     end
   end
 end
