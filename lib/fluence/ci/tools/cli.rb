@@ -40,53 +40,65 @@ module Fluence
           true
         end
 
-        # Per-Steps-method commands, defined dynamically so the CLI
-        # picks up new group methods (and new kwargs on existing ones)
-        # on `bundle update`.
-        Fluence::Ci::Tools::Steps.instance_methods(false).each do |group|
-          # Capture the parameter list once at class-definition time so
-          # the dispatch closure below doesn't have to re-introspect
-          # Steps on every CLI invocation.
+        # Register one Thor command per Steps method, with one Thor
+        # option per kwarg. Boolean type comes from {BOOLEAN_KWARGS};
+        # everything else is `:string`.
+        # @param group [Symbol] name of the Steps method to expose
+        # @return [void]
+        # @api private
+        def self.register_group_command(group)
           parameters = Fluence::Ci::Tools::Steps.instance_method(group).parameters
           desc group.to_s, "Run the #{group} catalog group"
+          parameters.each { |type, name| register_option(group, type, name) }
+          define_dispatch_method(group, parameters)
+        end
 
-          parameters.each do |type, name|
-            # Only `key` / `keyreq` map to Thor flags; positional args
-            # and `**overrides` (the keyrest on `Steps#all`) cannot be
-            # exposed through Thor without a per-method shim.
-            next unless %i[key keyreq].include?(type)
+        # Declare a single Thor option for one Steps kwarg.
+        # @return [void]
+        # @api private
+        def self.register_option(group, type, name)
+          return unless %i[key keyreq].include?(type)
 
-            if BOOLEAN_KWARGS.include?(name)
-              desc_text = if name == :report
-                            'Emit machine-readable artefact instead of console output'
-                          else
-                            "Forward `#{name}: true` to Steps##{group}"
-                          end
-              option name, type: :boolean, default: false, desc: desc_text
-            else
-              option name, type: :string,
-                           desc: "Forward `#{name}:` kwarg to Steps##{group}"
-            end
+          if BOOLEAN_KWARGS.include?(name)
+            option name, type: :boolean, default: false, desc: option_desc(group, name)
+          else
+            option name, type: :string, desc: "Forward `#{name}:` kwarg to Steps##{group}"
           end
+        end
 
+        # Description text for a boolean option. `--report` gets a
+        # human-friendly tagline; other booleans default to the
+        # standard "forward kwarg" message.
+        # @return [String]
+        # @api private
+        def self.option_desc(group, name)
+          return 'Emit machine-readable artefact instead of console output' if name == :report
+
+          "Forward `#{name}: true` to Steps##{group}"
+        end
+
+        # Define the Thor command body that forwards CLI options to the
+        # corresponding Steps method on a fresh {Runner} instance.
+        # @return [void]
+        # @api private
+        def self.define_dispatch_method(group, parameters)
           define_method(group) do
             runner = Fluence::Ci::Tools::Runner.new
-            # Forward only options the user actually set: skip nil
-            # (string flag absent) and false (boolean flag absent — the
-            # default for `report`). Unset kwargs let the Steps method
-            # apply its own default.
             kwargs = parameters.each_with_object({}) do |(type, name), acc|
               next unless %i[key keyreq].include?(type)
 
               value = options[name.to_s]
-              next if value.nil? || value == false
-
-              acc[name] = value
+              acc[name] = value unless value.nil? || value == false
             end
             runner.public_send(group, **kwargs)
             runner.report!
           end
         end
+
+        # Auto-pickup catalog: every Steps method becomes a top-level
+        # Thor command so adding a group on `bundle update` requires no
+        # edit here.
+        Fluence::Ci::Tools::Steps.instance_methods(false).each { |group| register_group_command(group) }
 
         desc 'install',
              'Generate lib/tasks/fluence_ci.rake (Rails apps: use `bin/rails generate fluence_ci:install`)'
