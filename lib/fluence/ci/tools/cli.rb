@@ -57,9 +57,11 @@ module Fluence
             next unless %i[key keyreq].include?(type)
 
             if BOOLEAN_KWARGS.include?(name)
-              desc_text = name == :report ?
-                            'Emit machine-readable artefact instead of console output' :
+              desc_text = if name == :report
+                            'Emit machine-readable artefact instead of console output'
+                          else
                             "Forward `#{name}: true` to Steps##{group}"
+                          end
               option name, type: :boolean, default: false, desc: desc_text
             else
               option name, type: :string,
