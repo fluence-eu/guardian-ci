@@ -1,6 +1,20 @@
 # Changelog
 
 All notable changes to this project will be documented in this file.
+## [0.6.0] - 2026-04-29
+
+### Added
+
+- feat(docs): add --build mode for HTML site generation
+
+### Refactored
+
+- refactor(cli): extract dynamic command registration into class methods
+
+### Style
+
+- style(cli): use if/else block instead of multi-line ternary
+
 ## [0.5.1] - 2026-04-28
 
 ### Added
