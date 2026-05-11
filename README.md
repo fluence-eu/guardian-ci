@@ -16,6 +16,31 @@ end
 
 Then `bundle install`. Authentication to GitHub Packages is the same as for the other Fluence gems (PAT or `BUNDLE_RUBYGEMS__PKG__GITHUB__COM` env var with `read:packages` scope).
 
+### Configure SimpleCov in the consumer's spec_helper
+
+Coverage is collected as a SimpleCov side-effect during `bundle exec fluence-ci tests`, so the consumer must wire SimpleCov before Rails (or the gem under test) is loaded. Without this snippet, the `tests` step still runs green but no `coverage/coverage.json` is produced and the `ruby-gem-coverage-{measure,pr}` reusables have nothing to upload or diff.
+
+Add this block at the very top of `spec/rails_helper.rb` (Rails apps) or `spec/spec_helper.rb` (pure gems), **before any other `require`**:
+
+```ruby
+require 'simplecov'
+require 'undercover/simplecov_formatter'
+
+SimpleCov.start 'rails' do  # use the default profile for pure gems
+  add_filter '/spec/'
+  formatter SimpleCov::Formatter::MultiFormatter.new(
+    [
+      SimpleCov::Formatter::HTMLFormatter,
+      SimpleCov::Formatter::Undercover
+    ]
+  )
+end
+```
+
+The `Undercover` formatter writes `coverage/coverage.json` — the file the centralised coverage workflows pick up. The `HTMLFormatter` writes `coverage/index.html` for local browsing. Add `coverage/` to `.gitignore` if not already present.
+
+Repos that want to enforce an absolute threshold (rather than only PR-diff coverage) can extend the block with `minimum_coverage` / `minimum_coverage_by_file` — see [SimpleCov's docs](https://github.com/simplecov-ruby/simplecov#minimum-coverage).
+
 ## What's included
 
 | Tool | Version pin | Purpose |
