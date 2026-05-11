@@ -16,6 +16,104 @@ end
 
 Then `bundle install`. Authentication to GitHub Packages is the same as for the other Fluence gems (PAT or `BUNDLE_RUBYGEMS__PKG__GITHUB__COM` env var with `read:packages` scope).
 
+### Configure SimpleCov in the consumer's spec_helper
+
+Coverage is collected as a SimpleCov side-effect during `bundle exec fluence-ci tests`, so the consumer must wire SimpleCov before any application or library code is loaded. Without this snippet, the `tests` step still runs green but no `coverage/coverage.json` is produced and the `ruby-gem-coverage-{measure,pr}` reusables have nothing to upload or diff.
+
+**Where to put it.** Add the block at the very top of `spec/spec_helper.rb`, **before any other `require`**. The default RSpec setup includes `--require spec_helper` in `.rspec`, so `spec_helper.rb` is loaded first for every test process — Rails apps included, where `rails_helper.rb` itself re-requires `spec_helper.rb`. Putting SimpleCov in `rails_helper.rb` instead would miss any spec that only requires `spec_helper` (e.g. fast non-Rails specs in a Rails app), resulting in partial coverage.
+
+**Rails app** — use the built-in `'rails'` profile, which filters `/config/`, `/db/`, `/spec/`, etc. automatically:
+
+```ruby
+require 'simplecov'
+require 'undercover/simplecov_formatter'
+
+SimpleCov.start 'rails' do
+  formatter SimpleCov::Formatter::MultiFormatter.new(
+    [
+      SimpleCov::Formatter::HTMLFormatter,
+      SimpleCov::Formatter::Undercover
+    ]
+  )
+end
+```
+
+**Pure gem** — use the default profile and filter the spec tree explicitly:
+
+```ruby
+require 'simplecov'
+require 'undercover/simplecov_formatter'
+
+SimpleCov.start do
+  add_filter '/spec/'
+  formatter SimpleCov::Formatter::MultiFormatter.new(
+    [
+      SimpleCov::Formatter::HTMLFormatter,
+      SimpleCov::Formatter::Undercover
+    ]
+  )
+end
+```
+
+The `Undercover` formatter writes `coverage/coverage.json` — the file the centralised coverage workflows pick up. The `HTMLFormatter` writes `coverage/index.html` for local browsing. Add `coverage/` to `.gitignore` if not already present.
+
+Repos that want to enforce an absolute threshold (rather than only PR-diff coverage) can extend the block with `minimum_coverage` / `minimum_coverage_by_file` — see [SimpleCov's docs](https://github.com/simplecov-ruby/simplecov#minimum-coverage).
+
+### Configure yard (gems running the docs workflows)
+
+`bundle exec fluence-ci docs` invokes `yard` against the consumer's source tree; without a `.yardopts` at the repo root, yard falls back to its global defaults (no markup parsing, no api filtering, output under `./doc` regardless of intent). Add a minimal `.yardopts` so the parse step and the HTML site produced by `fluence-ci docs --build` (consumed by `ruby-gem-docs-deploy.yml`) are both predictable:
+
+```
+--markup markdown
+--no-private
+--hide-api private
+--output-dir doc
+--readme README.md
+lib/**/*.rb
+-
+CHANGELOG.md
+CONTRIBUTING.md
+LICENSE.txt
+```
+
+`--no-private` + `--hide-api private` mean only methods tagged `@api public` end up in the rendered docs — pairs with the `@api` enforcement in `.yardstick.yml` below. Adjust the source glob (`lib/**/*.rb`) if your gem ships code under a different path.
+
+Rails apps that don't consume the `ruby-gem-docs-*` reusables can skip this file.
+
+### Configure yardstick threshold (gems running the docs workflows)
+
+`fluence-ci docs --report` runs `Fluence::Ci::Tools::YardstickRunner`, which reads `.yardstick.yml` at the repo root to know what rules to enforce and what coverage threshold to gate on. Without it, the docs measure job posts no meaningful report (and the threshold check is a no-op). Minimal config — adjust `threshold` to your target percentage:
+
+```yaml
+---
+threshold: 100
+require_exact_threshold: false
+verbose: true
+path:
+  - 'lib/**/*.rb'
+rules:
+  ApiTag::Presence:
+    enabled: true
+  ApiTag::Inclusion:
+    enabled: true
+  ReturnTag:
+    enabled: true
+  Summary::Presence:
+    enabled: true
+```
+
+See [`fluence-ci-tools`'s own `.yardstick.yml`](https://github.com/fluence-eu/fluence-ci-tools/blob/main/.yardstick.yml) for the full set of toggles (`Summary::Length`, `Summary::Delimiter`, `ExampleTag`, etc. are all off by default and can be enabled per-repo).
+
+Rails apps that don't consume the `ruby-gem-docs-*` reusables can skip this file.
+
+### Configure git-cliff (consumers using the release automation)
+
+The `app-prepare-release.yml` reusable runs [`orhun/git-cliff-action`](https://github.com/orhun/git-cliff-action) to generate `CHANGELOG.md` entries from conventional commits. It expects a `cliff.toml` at the repo root; without one, the action fails or produces empty changelog sections.
+
+Copy [`fluence-ci-tools/cliff.toml`](https://github.com/fluence-eu/fluence-ci-tools/blob/main/cliff.toml) as a starting point and adjust the `commit_parsers` section for your project (e.g. add repo-specific `{ message = "^chore: bump version", skip = true }` rules for commits you don't want to surface). The header / body templates can usually be kept verbatim — they emit the Keep-a-Changelog format expected by the release workflow.
+
+Consumers that don't use `prepare-release.yml` / `release.yml` (no release automation) can skip this file.
+
 ## What's included
 
 | Tool | Version pin | Purpose |
