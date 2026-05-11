@@ -18,15 +18,33 @@ Then `bundle install`. Authentication to GitHub Packages is the same as for the 
 
 ### Configure SimpleCov in the consumer's spec_helper
 
-Coverage is collected as a SimpleCov side-effect during `bundle exec fluence-ci tests`, so the consumer must wire SimpleCov before Rails (or the gem under test) is loaded. Without this snippet, the `tests` step still runs green but no `coverage/coverage.json` is produced and the `ruby-gem-coverage-{measure,pr}` reusables have nothing to upload or diff.
+Coverage is collected as a SimpleCov side-effect during `bundle exec fluence-ci tests`, so the consumer must wire SimpleCov before any application or library code is loaded. Without this snippet, the `tests` step still runs green but no `coverage/coverage.json` is produced and the `ruby-gem-coverage-{measure,pr}` reusables have nothing to upload or diff.
 
-Add this block at the very top of `spec/rails_helper.rb` (Rails apps) or `spec/spec_helper.rb` (pure gems), **before any other `require`**:
+**Where to put it.** Add the block at the very top of `spec/spec_helper.rb`, **before any other `require`**. The default RSpec setup includes `--require spec_helper` in `.rspec`, so `spec_helper.rb` is loaded first for every test process — Rails apps included, where `rails_helper.rb` itself re-requires `spec_helper.rb`. Putting SimpleCov in `rails_helper.rb` instead would miss any spec that only requires `spec_helper` (e.g. fast non-Rails specs in a Rails app), resulting in partial coverage.
+
+**Rails app** — use the built-in `'rails'` profile, which filters `/config/`, `/db/`, `/spec/`, etc. automatically:
 
 ```ruby
 require 'simplecov'
 require 'undercover/simplecov_formatter'
 
-SimpleCov.start 'rails' do  # use the default profile for pure gems
+SimpleCov.start 'rails' do
+  formatter SimpleCov::Formatter::MultiFormatter.new(
+    [
+      SimpleCov::Formatter::HTMLFormatter,
+      SimpleCov::Formatter::Undercover
+    ]
+  )
+end
+```
+
+**Pure gem** — use the default profile and filter the spec tree explicitly:
+
+```ruby
+require 'simplecov'
+require 'undercover/simplecov_formatter'
+
+SimpleCov.start do
   add_filter '/spec/'
   formatter SimpleCov::Formatter::MultiFormatter.new(
     [
