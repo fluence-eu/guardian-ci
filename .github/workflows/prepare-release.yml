@@ -20,7 +20,7 @@ jobs:
       version_file: lib/fluence/ci/tools/version.rb
       bump: ${{ inputs.bump }}
     secrets:
-      RELEASE_APP_PRIVATE_KEY: ${{ secrets.RELEASE_APP_PRIVATE_KEY }}
+      FLUENCE_RELEASE_BOT_PRIVATE_KEY: ${{ secrets.FLUENCE_RELEASE_BOT_PRIVATE_KEY }}
     permissions:
       contents: read
       packages: read
