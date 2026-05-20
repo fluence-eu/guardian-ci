@@ -84,7 +84,7 @@ Optional — indicates the area affected:
 
 - `chore(gemspec): pin reek to ~> 6.6`
 - `docs(readme): add migration example for Rails apps`
-- `ci: bump release.yml to ci-workflows@v3`
+- `ci: bump release.yml to ci-workflows@v5`
 
 ### Description
 
@@ -144,7 +144,7 @@ There is intentionally no production code under `lib/`. Phase 2 will add a Thor 
 
 ## CI
 
-GitHub Actions workflows under `.github/workflows/`, all wired through `fluence-eu/ci-workflows@v2` reusables:
+GitHub Actions workflows under `.github/workflows/`, all wired through `fluence-eu/ci-workflows@v5` reusables:
 
 - **rubocop-pr.yml** — runs RuboCop on every PR, posts a sticky comment with offense delta vs `main`
 - **rubocop-measure.yml** — establishes the `main` baseline (artifact `rubocop-report`)
@@ -152,7 +152,7 @@ GitHub Actions workflows under `.github/workflows/`, all wired through `fluence-
 - **release.yml** — on merge of a release PR, creates the tag + GitHub Release
 - **publish.yml** — on Release published, pushes the gem to GitHub Packages (also dispatchable manually with a `tag` input for republishing past versions)
 
-The release App secret `RELEASE_APP_PRIVATE_KEY` is forwarded to `release.yml` so the GitHub Release is created with an App-issued token — required for the `publish.yml` chain to fire (see fluence-eu/ci-workflows#12 for the rationale).
+The release App secret `FLUENCE_RELEASE_BOT_PRIVATE_KEY` is forwarded to `release.yml` so the GitHub Release is created with an App-issued token — required for the `publish.yml` chain to fire (see fluence-eu/ci-workflows#12 for the rationale).
 
 ---
 
