@@ -14,10 +14,9 @@ on:
 
 jobs:
   prepare:
-    uses: fluence-eu/ci-workflows/.github/workflows/ruby-gem-prepare-release.yml@v2
+    uses: fluence-eu/ci-workflows/.github/workflows/ruby-gem-prepare-release.yml@v5
     with:
-      gem_name: fluence-ci-tools
-      version_file: lib/fluence/ci/tools/version.rb
+      gem_specs: fluence-ci-tools
       bump: ${{ inputs.bump }}
     secrets:
       FLUENCE_RELEASE_BOT_PRIVATE_KEY: ${{ secrets.FLUENCE_RELEASE_BOT_PRIVATE_KEY }}
