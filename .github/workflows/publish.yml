@@ -17,7 +17,7 @@ on:
 
 jobs:
   publish:
-    uses: fluence-eu/ci-workflows/.github/workflows/ruby-gem-publish.yml@v2
+    uses: fluence-eu/ci-workflows/.github/workflows/ruby-gem-publish.yml@v5
     with:
       gem_name: fluence-ci-tools
       # Empty for `release: published` (the reusable falls back to the
