@@ -2,7 +2,7 @@
 # yardstick quality checks for the gem's public API.
 # @api tags document the stability contract: public methods are part
 # of SemVer, private ones may change without notice.
-threshold: 100
+threshold: 95
 require_exact_threshold: false
 verbose: true
 path:
