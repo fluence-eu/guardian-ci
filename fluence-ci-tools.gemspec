@@ -38,21 +38,21 @@ Gem::Specification.new do |spec|
   # Tools shipped to the consumer's :development, :test bundle. Every
   # tool is pinned at major.minor to keep the baseline/delta numbers
   # the centralised CI workflows surface stable across runs — same
-  # rationale as rubocop's ~> 1.21 pin.
+  # rationale as rubocop's ~> 1.86 pin.
   # Required by undercover on Ruby 3.5+ where benchmark left the stdlib.
   # Declared here so consumers don't have to add it themselves.
   spec.add_dependency 'benchmark', '~> 0.4'
   # Powers the install generator (Thor::Group) and the `fluence-ci`
   # CLI exe. Kept loose at major because Thor's surface API barely
   # changes — we use only `Thor`, `Thor::Group`, `Thor::Actions`.
-  spec.add_dependency 'brakeman', '~> 8.0'
+  spec.add_dependency 'brakeman', '~> 8.1'
   spec.add_dependency 'bundler-audit', '~> 0.9'
   spec.add_dependency 'flay', '~> 2.14'
   spec.add_dependency 'flog', '~> 4.9'
-  spec.add_dependency 'reek', '~> 6.5'
-  spec.add_dependency 'rubocop', '~> 1.21'
+  spec.add_dependency 'reek', '~> 6.6'
+  spec.add_dependency 'rubocop', '~> 1.86'
   spec.add_dependency 'rubocop-rails-omakase', '~> 1.1'
-  spec.add_dependency 'rubocop-rspec', '~> 3.0'
+  spec.add_dependency 'rubocop-rspec', '~> 3.10'
   spec.add_dependency 'ruby_audit', '~> 3.1'
   spec.add_dependency 'simplecov', '~> 0.22'
   spec.add_dependency 'thor', '~> 1.3'

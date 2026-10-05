@@ -118,13 +118,13 @@ Consumers that don't use `prepare-release.yml` / `release.yml` (no release autom
 
 | Tool | Version pin | Purpose |
 |---|---|---|
-| `rubocop` | `~> 1.21` | Style + correctness lint |
+| `rubocop` | `~> 1.86` | Style + correctness lint |
 | `rubocop-rails-omakase` | `~> 1.1` | Omakase rules for Rails apps |
-| `rubocop-rspec` | `~> 3.0` | RSpec-specific cops |
-| `brakeman` | `~> 8.0` | Rails static security analysis |
+| `rubocop-rspec` | `~> 3.10` | RSpec-specific cops |
+| `brakeman` | `~> 8.1` | Rails static security analysis |
 | `bundler-audit` | `~> 0.9` | Gem CVE scanner |
 | `ruby_audit` | `~> 3.1` | Ruby/RubyGems CVE scanner |
-| `reek` | `~> 6.5` | Design-smell detector |
+| `reek` | `~> 6.6` | Design-smell detector |
 | `flog` | `~> 4.9` | Cyclomatic complexity scorer |
 | `flay` | `~> 2.14` | Code-duplication scorer |
 | `yard` | `~> 0.9` | Documentation generator |
