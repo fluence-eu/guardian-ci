@@ -71,7 +71,7 @@ jobs:
       - name: Skip on release PR
         if: startsWith(github.head_ref, 'release/v')
         run: echo "Release PR — matrix specs skipped (no Ruby source changes)."
-      - uses: actions/checkout@v6
+      - uses: actions/checkout@v7
         if: ${{ !startsWith(github.head_ref, 'release/v') }}
       - name: Set up Ruby
         if: ${{ !startsWith(github.head_ref, 'release/v') }}
