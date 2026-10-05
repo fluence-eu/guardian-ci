@@ -42,9 +42,6 @@ Gem::Specification.new do |spec|
   # Required by undercover on Ruby 3.5+ where benchmark left the stdlib.
   # Declared here so consumers don't have to add it themselves.
   spec.add_dependency 'benchmark', '~> 0.4'
-  # Powers the install generator (Thor::Group) and the `fluence-ci`
-  # CLI exe. Kept loose at major because Thor's surface API barely
-  # changes — we use only `Thor`, `Thor::Group`, `Thor::Actions`.
   spec.add_dependency 'brakeman', '~> 8.1'
   spec.add_dependency 'bundler-audit', '~> 0.9'
   spec.add_dependency 'flay', '~> 2.14'
@@ -55,6 +52,9 @@ Gem::Specification.new do |spec|
   spec.add_dependency 'rubocop-rspec', '~> 3.10'
   spec.add_dependency 'ruby_audit', '~> 3.1'
   spec.add_dependency 'simplecov', '~> 0.22'
+  # Powers the install generator (Thor::Group) and the `fluence-ci`
+  # CLI exe. Kept loose at major because Thor's surface API barely
+  # changes — we use only `Thor`, `Thor::Group`, `Thor::Actions`.
   spec.add_dependency 'thor', '~> 1.3'
   spec.add_dependency 'undercover', '~> 0.8'
   spec.add_dependency 'yard', '~> 0.9'
