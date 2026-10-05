@@ -36,20 +36,17 @@ jobs:
           - name: Ruby 3.3 / Rails latest
             ruby: '3.3'
             gemfile: Gemfile
-          - name: Ruby 3.2 / Rails latest
-            ruby: '3.2'
-            gemfile: Gemfile
           # Rails compatibility matrix: one Ruby per Rails minor, using
           # Appraisal-generated gemfiles under gemfiles/. Keep this in
           # sync with `Appraisals`.
-          - name: Ruby 3.2 / Rails 7.0
-            ruby: '3.2'
+          - name: Ruby 3.3 / Rails 7.0
+            ruby: '3.3'
             gemfile: gemfiles/rails_7.0.gemfile
-          - name: Ruby 3.2 / Rails 7.1
-            ruby: '3.2'
+          - name: Ruby 3.3 / Rails 7.1
+            ruby: '3.3'
             gemfile: gemfiles/rails_7.1.gemfile
-          - name: Ruby 3.2 / Rails 7.2
-            ruby: '3.2'
+          - name: Ruby 3.3 / Rails 7.2
+            ruby: '3.3'
             gemfile: gemfiles/rails_7.2.gemfile
           - name: Ruby 3.3 / Rails 8.0
             ruby: '3.3'
