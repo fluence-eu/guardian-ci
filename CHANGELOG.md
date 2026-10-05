@@ -1,6 +1,36 @@
 # Changelog
 
 All notable changes to this project will be documented in this file.
+## [0.6.1] - 2026-10-05
+
+### Build
+
+- build: raise brakeman, reek, rubocop and rubocop-rspec floors
+- build!: require Ruby >= 3.3
+
+### CI
+
+- ci: bump actions/checkout to v7
+- ci: deploy the YARD docs to GitHub Pages
+- ci: forward the release bot key on codequality-pr
+- ci: keep codequality-pr without the release bot key
+- ci: forward the release bot key on codequality-pr
+- ci: migrate to ci-workflows@v6 config file
+- ci(workflows): bump ci-workflows pins from @v2 to @v5 + drop github.actor
+- ci: bump ci-workflows to @v5 (multi-gem-capable reusables)
+
+### Documentation
+
+- docs: align the YARD config with the gems family
+- docs: refresh CONTRIBUTING.md after ci-workflows@v5 migration
+- docs(readme): split SimpleCov snippet into rails/gem variants
+- docs(readme): document .yardopts, .yardstick.yml and cliff.toml
+- docs(readme): document SimpleCov spec_helper snippet
+
+### Other
+
+- chore: migrate to ci-workflows v4 (FLUENCE_*_BOT_* naming)
+
 ## [0.6.0] - 2026-04-29
 
 ### Added
