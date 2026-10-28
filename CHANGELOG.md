@@ -1,6 +1,30 @@
 # Changelog
 
 All notable changes to this project will be documented in this file.
+## [2026.10.28.182143] - 2026-10-28
+
+### Build
+
+- build(gemspec): drop allowed_push_host
+
+### CI
+
+- ci: add the Claude PR review workflow
+- ci: release dated versions
+- ci: bump workflows to ci-workflows@v7
+- ci: publish releases to rubygems.org
+
+### Other
+
+- chore(gemspec): move the Thor comment above the thor dependency
+
+### Refactored
+
+- refactor: drop Fluence branding from the tool's own wording
+- refactor!: write report-mode artefacts under tmp/guardian-report
+- refactor(cli)!: rename fluence-ci executable and generator to guardian-ci
+- refactor!: rename gem to guardian-ci under Guardian::Ci
+
 ## [0.6.1] - 2026-10-05
 
 ### Build
