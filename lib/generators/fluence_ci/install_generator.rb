@@ -9,7 +9,7 @@ module FluenceCi
   # registers it at boot time so consumers don't need any extra wiring.
   #
   # Generates a standalone `bin/fluence-ci` executable that runs the
-  # Fluence catalog via {Fluence::Ci::Tools::Runner}, side-by-side with
+  # Fluence catalog via {Guardian::Ci::Runner}, side-by-side with
   # Rails 8's native `bin/ci`. No injection into `config/ci.rb` — the
   # two scripts run independently and never duplicate work:
   #

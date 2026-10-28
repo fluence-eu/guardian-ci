@@ -3,9 +3,9 @@
 require 'fileutils'
 require 'tmpdir'
 require 'stringio'
-require 'fluence/ci/tools/cli'
+require 'guardian/ci/cli'
 
-RSpec.describe Fluence::Ci::Tools::CLI do
+RSpec.describe Guardian::Ci::CLI do
   let(:tmpdir) { Dir.mktmpdir }
   after { FileUtils.remove_entry(tmpdir) }
 
@@ -38,21 +38,21 @@ RSpec.describe Fluence::Ci::Tools::CLI do
   describe 'version' do
     it 'prints the gem version' do
       expect { described_class.start(['version']) }
-        .to output("fluence-ci-tools #{Fluence::Ci::Tools::VERSION}\n").to_stdout
+        .to output("guardian-ci #{Guardian::Ci::VERSION}\n").to_stdout
     end
   end
 
   describe 'group commands' do
     it 'exposes one top-level Thor command per Steps method' do
-      Fluence::Ci::Tools::Steps.instance_methods(false).each do |group|
+      Guardian::Ci::Steps.instance_methods(false).each do |group|
         expect(described_class.commands).to have_key(group.to_s)
       end
     end
 
     it 'auto-exposes a CLI option for every Steps kwarg' do
-      Fluence::Ci::Tools::Steps.instance_methods(false).each do |group|
+      Guardian::Ci::Steps.instance_methods(false).each do |group|
         cmd = described_class.commands[group.to_s]
-        Fluence::Ci::Tools::Steps.instance_method(group).parameters.each do |type, name|
+        Guardian::Ci::Steps.instance_method(group).parameters.each do |type, name|
           # Positional args and **rest don't map to Thor options — only
           # `key` / `keyreq` do.
           next unless %i[key keyreq].include?(type)
@@ -69,13 +69,13 @@ RSpec.describe Fluence::Ci::Tools::CLI do
       # `step` and `report!` so the runner doesn't shell out, and assert
       # on the commands passed to `step` to prove the dispatch path.
       let(:runner) do
-        Fluence::Ci::Tools::Runner.new(io: StringIO.new).tap do |r|
+        Guardian::Ci::Runner.new(io: StringIO.new).tap do |r|
           allow(r).to receive(:step)
           allow(r).to receive(:report!)
         end
       end
 
-      before { allow(Fluence::Ci::Tools::Runner).to receive(:new).and_return(runner) }
+      before { allow(Guardian::Ci::Runner).to receive(:new).and_return(runner) }
 
       it 'runs the default-mode command without --report' do
         described_class.start(['lint'])
@@ -121,7 +121,7 @@ RSpec.describe Fluence::Ci::Tools::CLI do
       it 'lets --report take precedence when both --build and --report are passed' do
         described_class.start(['docs', '--build', '--report'])
         expect(runner).to have_received(:step)
-          .with('Docs: yardstick', a_string_including('Fluence::Ci::Tools::YardstickRunner.run!'))
+          .with('Docs: yardstick', a_string_including('Guardian::Ci::YardstickRunner.run!'))
       end
     end
   end

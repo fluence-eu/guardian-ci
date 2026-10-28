@@ -1,6 +1,6 @@
 #!/usr/bin/env ruby
 # frozen_string_literal: true
 
-require 'fluence/ci/tools/cli'
+require 'guardian/ci/cli'
 
-Fluence::Ci::Tools::CLI.start(ARGV)
+Guardian::Ci::CLI.start(ARGV)

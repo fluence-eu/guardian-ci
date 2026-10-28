@@ -3,9 +3,9 @@
 require 'fileutils'
 require 'tmpdir'
 require 'yaml'
-require 'fluence/ci/tools/yardstick_runner'
+require 'guardian/ci/yardstick_runner'
 
-RSpec.describe Fluence::Ci::Tools::YardstickRunner do
+RSpec.describe Guardian::Ci::YardstickRunner do
   describe '.run!' do
     around do |example|
       Dir.mktmpdir { |dir| Dir.chdir(dir) { example.run } }

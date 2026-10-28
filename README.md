@@ -1,8 +1,8 @@
-# fluence-ci-tools
+# guardian-ci
 
 Curated dev/CI tooling deps for Fluence Ruby projects. One Gemfile entry pulls in the full set used by the [`fluence-eu/ci-workflows`](https://github.com/fluence-eu/ci-workflows) reusable workflows, with version pins kept consistent across all consumers.
 
-Solves the « 13 lines of dev gems × 4 repos » bookkeeping problem: when a new tool is added or a pin is bumped, only this gem changes — consumers run `bundle update fluence-ci-tools` and they're aligned.
+Solves the « 13 lines of dev gems × 4 repos » bookkeeping problem: when a new tool is added or a pin is bumped, only this gem changes — consumers run `bundle update guardian-ci` and they're aligned.
 
 ## Installation
 
@@ -10,7 +10,7 @@ In the consumer's `Gemfile`:
 
 ```ruby
 source 'https://rubygems.pkg.github.com/fluence-eu' do
-  gem 'fluence-ci-tools', require: false, group: %i[development test]
+  gem 'guardian-ci', require: false, group: %i[development test]
 end
 ```
 
@@ -82,7 +82,7 @@ Rails apps that don't consume the `ruby-gem-docs-*` reusables can skip this file
 
 ### Configure yardstick threshold (gems running the docs workflows)
 
-`fluence-ci docs --report` runs `Fluence::Ci::Tools::YardstickRunner`, which reads `.yardstick.yml` at the repo root to know what rules to enforce and what coverage threshold to gate on. Without it, the docs measure job posts no meaningful report (and the threshold check is a no-op). Minimal config — adjust `threshold` to your target percentage:
+`fluence-ci docs --report` runs `Guardian::Ci::YardstickRunner`, which reads `.yardstick.yml` at the repo root to know what rules to enforce and what coverage threshold to gate on. Without it, the docs measure job posts no meaningful report (and the threshold check is a no-op). Minimal config — adjust `threshold` to your target percentage:
 
 ```yaml
 ---
@@ -102,7 +102,7 @@ rules:
     enabled: true
 ```
 
-See [`fluence-ci-tools`'s own `.yardstick.yml`](https://github.com/fluence-eu/fluence-ci-tools/blob/main/.yardstick.yml) for the full set of toggles (`Summary::Length`, `Summary::Delimiter`, `ExampleTag`, etc. are all off by default and can be enabled per-repo).
+See [`guardian-ci`'s own `.yardstick.yml`](https://github.com/fluence-eu/guardian-ci/blob/main/.yardstick.yml) for the full set of toggles (`Summary::Length`, `Summary::Delimiter`, `ExampleTag`, etc. are all off by default and can be enabled per-repo).
 
 Rails apps that don't consume the `ruby-gem-docs-*` reusables can skip this file.
 
@@ -110,7 +110,7 @@ Rails apps that don't consume the `ruby-gem-docs-*` reusables can skip this file
 
 The `app-prepare-release.yml` reusable runs [`orhun/git-cliff-action`](https://github.com/orhun/git-cliff-action) to generate `CHANGELOG.md` entries from conventional commits. It expects a `cliff.toml` at the repo root; without one, the action fails or produces empty changelog sections.
 
-Copy [`fluence-ci-tools/cliff.toml`](https://github.com/fluence-eu/fluence-ci-tools/blob/main/cliff.toml) as a starting point and adjust the `commit_parsers` section for your project (e.g. add repo-specific `{ message = "^chore: bump version", skip = true }` rules for commits you don't want to surface). The header / body templates can usually be kept verbatim — they emit the Keep-a-Changelog format expected by the release workflow.
+Copy [`guardian-ci/cliff.toml`](https://github.com/fluence-eu/guardian-ci/blob/main/cliff.toml) as a starting point and adjust the `commit_parsers` section for your project (e.g. add repo-specific `{ message = "^chore: bump version", skip = true }` rules for commits you don't want to surface). The header / body templates can usually be kept verbatim — they emit the Keep-a-Changelog format expected by the release workflow.
 
 Consumers that don't use `prepare-release.yml` / `release.yml` (no release automation) can skip this file.
 
@@ -133,7 +133,7 @@ Consumers that don't use `prepare-release.yml` / `release.yml` (no release autom
 | `undercover` | `~> 0.8` | Coverage delta vs base branch |
 | `benchmark` | `~> 0.4` | Required by `undercover` on Ruby 3.5+ where it left the stdlib |
 
-Every dependency is pinned at major.minor. Same rationale as the centralised workflows: `~> X.Y` keeps the baseline/delta numbers reported by the sticky CI comments stable across runs while still letting patch-level fixes through. To bump a tool, change it here once and all consumers receive the new version on `bundle update fluence-ci-tools`.
+Every dependency is pinned at major.minor. Same rationale as the centralised workflows: `~> X.Y` keeps the baseline/delta numbers reported by the sticky CI comments stable across runs while still letting patch-level fixes through. To bump a tool, change it here once and all consumers receive the new version on `bundle update guardian-ci`.
 
 ## Migrating from individual gems
 
@@ -155,7 +155,7 @@ If your repo currently lists these tools individually in its `Gemfile` (typical 
 -  gem 'simplecov', require: false
 -  gem 'undercover', require: false
 +  source 'https://rubygems.pkg.github.com/fluence-eu' do
-+    gem 'fluence-ci-tools', require: false
++    gem 'guardian-ci', require: false
 +  end
  end
 ```
@@ -174,11 +174,11 @@ After `bundle install`, the resolved versions in `Gemfile.lock` should be the sa
 
 ## Project type vs. tools
 
-A pure gem like `fluence-gateway-client` won't actually invoke `brakeman` (Rails-specific) but the gem is still installed in its bundle. Disk + install-time cost is small enough not to matter; if it ever does, the tooling can be split into `fluence-ci-tools-gem` / `fluence-ci-tools-rails` sub-gems.
+A pure gem like `fluence-gateway-client` won't actually invoke `brakeman` (Rails-specific) but the gem is still installed in its bundle. Disk + install-time cost is small enough not to matter; if it ever does, the tooling can be split into `guardian-ci-gem` / `guardian-ci-rails` sub-gems.
 
 ## Generator and CLI
 
-The gem ships an `fluence-ci` executable plus a Rails generator that scaffolds the local CI orchestration. Both delegate to the same `Fluence::Ci::Tools::Steps` catalog, so the local pre-push run mirrors what the centralised CI workflows execute.
+The gem ships an `fluence-ci` executable plus a Rails generator that scaffolds the local CI orchestration. Both delegate to the same `Guardian::Ci::Steps` catalog, so the local pre-push run mirrors what the centralised CI workflows execute.
 
 ### Installing the local CI scaffold
 
@@ -188,7 +188,7 @@ bin/rails generate fluence_ci:install
 bin/fluence-ci                            # Fluence catalog
 bin/ci && bin/fluence-ci                  # Or chain with Rails native
 ```
-Writes a standalone executable `bin/fluence-ci` that runs the Fluence catalog via `Fluence::Ci::Tools::Runner`. **Does not touch `config/ci.rb`** — Rails 8's native `bin/ci` keeps running its defaults (rubocop, brakeman, bundler-audit) untouched, and `bin/fluence-ci` adds the Fluence-specific checks (ruby_audit, codequality, docs, tests) side-by-side. No duplication.
+Writes a standalone executable `bin/fluence-ci` that runs the Fluence catalog via `Guardian::Ci::Runner`. **Does not touch `config/ci.rb`** — Rails 8's native `bin/ci` keeps running its defaults (rubocop, brakeman, bundler-audit) untouched, and `bin/fluence-ci` adds the Fluence-specific checks (ruby_audit, codequality, docs, tests) side-by-side. No duplication.
 
 **Pure gem**:
 ```bash
@@ -231,7 +231,7 @@ Coverage for `tests` is captured automatically by SimpleCov when configured in t
 | `lint` | `rubocop` | `rubocop --format json --out tmp/fluence-report/rubocop.json` | — |
 | `security` | `brakeman` + `bundler-audit` + `ruby-audit` | same trio, machine-readable outputs under `tmp/fluence-report/` | — |
 | `codequality` | `reek` + `flog` + `flay` | same trio, JSON / text outputs under `tmp/fluence-report/` | `--paths "app lib"` |
-| `docs` | `yard doc --no-output --no-stats` (parse smoke test) | in-process `Fluence::Ci::Tools::YardstickRunner` — reads `.yardstick.yml`, writes `doc/yardstick_report.txt`, exits 1 below threshold (no consumer Rakefile dependency) | `--build` → `yard doc` (HTML site under `doc/`) |
+| `docs` | `yard doc --no-output --no-stats` (parse smoke test) | in-process `Guardian::Ci::YardstickRunner` — reads `.yardstick.yml`, writes `doc/yardstick_report.txt`, exits 1 below threshold (no consumer Rakefile dependency) | `--build` → `yard doc` (HTML site under `doc/`) |
 | `tests` | `rspec` (overridable to `bin/rails test`) | n/a — coverage is produced as a SimpleCov side effect | `--command "bundle exec rake test"` |
 
 To customise, edit the generated `bin/fluence-ci` (Rails) or `lib/tasks/fluence_ci.rake` (gem). Both files are plain Ruby — instantiate the Runner and call individual groups directly instead of `runner.all`, or pass per-group overrides like `runner.all(codequality: { paths: 'app lib' })`.

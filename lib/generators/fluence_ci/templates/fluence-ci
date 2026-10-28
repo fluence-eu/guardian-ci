@@ -14,7 +14,7 @@
 # pre-push run mirrors what each `*-pr.yml` job exercises.
 
 require_relative '../config/boot'
-require 'fluence/ci/tools/cli'
+require 'guardian/ci/cli'
 
 argv = ARGV.empty? ? %w[all] : ARGV
-Fluence::Ci::Tools::CLI.start(argv)
+Guardian::Ci::CLI.start(argv)

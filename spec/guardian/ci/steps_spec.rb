@@ -2,12 +2,12 @@
 
 require 'fileutils'
 require 'tmpdir'
-require 'fluence/ci/tools/steps'
+require 'guardian/ci/steps'
 
-RSpec.describe Fluence::Ci::Tools::Steps do
+RSpec.describe Guardian::Ci::Steps do
   let(:host_class) do
     Class.new do
-      include Fluence::Ci::Tools::Steps
+      include Guardian::Ci::Steps
 
       attr_reader :steps
 
@@ -95,7 +95,7 @@ RSpec.describe Fluence::Ci::Tools::Steps do
       expect(host.steps.size).to eq(1)
       label, command = host.steps.first
       expect(label).to eq('Docs: yardstick')
-      expect(command).to include('Fluence::Ci::Tools::YardstickRunner.run!')
+      expect(command).to include('Guardian::Ci::YardstickRunner.run!')
     end
 
     it 'lets report: take precedence over build:' do
@@ -177,7 +177,7 @@ RSpec.describe Fluence::Ci::Tools::Steps do
     end
 
     it 'picks up new step groups automatically (auto-pickup)' do
-      Fluence::Ci::Tools::Steps.module_eval do
+      Guardian::Ci::Steps.module_eval do
         def accessibility
           step 'A11y: axe', 'bundle exec axe-rspec'
         end
@@ -185,9 +185,7 @@ RSpec.describe Fluence::Ci::Tools::Steps do
       host.all
       expect(host.steps.map(&:first)).to include('A11y: axe')
     ensure
-      if Fluence::Ci::Tools::Steps.method_defined?(:accessibility)
-        Fluence::Ci::Tools::Steps.send(:remove_method, :accessibility)
-      end
+      Guardian::Ci::Steps.send(:remove_method, :accessibility) if Guardian::Ci::Steps.method_defined?(:accessibility)
     end
 
     it 'propagates report: true to every group method that accepts it' do
@@ -196,7 +194,7 @@ RSpec.describe Fluence::Ci::Tools::Steps do
       expect(commands).to include(a_string_matching(%r{tmp/fluence-report/rubocop\.json}))
       expect(commands).to include(a_string_matching(%r{tmp/fluence-report/brakeman\.json}))
       expect(commands).to include(a_string_matching(%r{tmp/fluence-report/reek\.json}))
-      expect(commands).to include(a_string_matching('Fluence::Ci::Tools::YardstickRunner.run!'))
+      expect(commands).to include(a_string_matching('Guardian::Ci::YardstickRunner.run!'))
     end
 
     it 'lets per-group overrides win over the global report flag' do
