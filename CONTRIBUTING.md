@@ -151,6 +151,7 @@ GitHub Actions workflows under `.github/workflows/`, all wired through `fluence-
 - **prepare-release.yml** — manual dispatch (`patch` / `minor` / `major`) opens a release PR
 - **release.yml** — on merge of a release PR, creates the tag + GitHub Release
 - **publish.yml** — on Release published, pushes the gem to GitHub Packages (also dispatchable manually with a `tag` input for republishing past versions)
+- **publish-rubygems.yml** — on Release published, pushes the same gem to rubygems.org through trusted publishing (same manual `tag` dispatch)
 
 The release App secret `FLUENCE_RELEASE_BOT_PRIVATE_KEY` is forwarded to `release.yml` so the GitHub Release is created with an App-issued token — required for the `publish.yml` chain to fire (see fluence-eu/ci-workflows#12 for the rationale).
 
