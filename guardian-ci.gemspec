@@ -1,27 +1,27 @@
 # frozen_string_literal: true
 
-require_relative 'lib/fluence/ci/tools/version'
+require_relative 'lib/guardian/ci/version'
 
 Gem::Specification.new do |spec|
-  spec.name = 'fluence-ci-tools'
-  spec.version = Fluence::Ci::Tools::VERSION
+  spec.name = 'guardian-ci'
+  spec.version = Guardian::Ci::VERSION
   spec.authors = ['Jonathan PHILIPPE']
   spec.email = ['jphilippe@fluence.eu']
 
-  spec.summary = 'Curated dev/CI tooling deps for Fluence Ruby projects'
+  spec.summary = 'Curated dev/CI tooling deps for Ruby projects'
   spec.description = 'Single Gemfile entry that bundles rubocop, brakeman, ' \
                      'bundler-audit, ruby_audit, reek, flog, flay, yard, ' \
                      'yardstick, simplecov and undercover with the version ' \
                      'pins used by the fluence-eu/ci-workflows reusables.'
-  spec.homepage = 'https://github.com/fluence-eu/fluence-ci-tools'
+  spec.homepage = 'https://github.com/fluence-eu/guardian-ci'
   spec.license = 'MIT'
   spec.required_ruby_version = '>= 3.3.0'
 
   spec.metadata['allowed_push_host'] = 'https://rubygems.pkg.github.com/fluence-eu'
   spec.metadata['homepage_uri'] = spec.homepage
-  spec.metadata['source_code_uri'] = 'https://github.com/fluence-eu/fluence-ci-tools'
-  spec.metadata['changelog_uri'] = 'https://github.com/fluence-eu/fluence-ci-tools/blob/main/CHANGELOG.md'
-  spec.metadata['github_repo'] = 'https://github.com/fluence-eu/fluence-ci-tools'
+  spec.metadata['source_code_uri'] = 'https://github.com/fluence-eu/guardian-ci'
+  spec.metadata['changelog_uri'] = 'https://github.com/fluence-eu/guardian-ci/blob/main/CHANGELOG.md'
+  spec.metadata['github_repo'] = 'https://github.com/fluence-eu/guardian-ci'
   spec.metadata['rubygems_mfa_required'] = 'true'
 
   gemspec = File.basename(__FILE__)
@@ -52,7 +52,7 @@ Gem::Specification.new do |spec|
   spec.add_dependency 'rubocop-rspec', '~> 3.10'
   spec.add_dependency 'ruby_audit', '~> 3.1'
   spec.add_dependency 'simplecov', '~> 0.22'
-  # Powers the install generator (Thor::Group) and the `fluence-ci`
+  # Powers the install generator (Thor::Group) and the `guardian-ci`
   # CLI exe. Kept loose at major because Thor's surface API barely
   # changes — we use only `Thor`, `Thor::Group`, `Thor::Actions`.
   spec.add_dependency 'thor', '~> 1.3'

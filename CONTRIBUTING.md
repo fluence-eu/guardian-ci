@@ -13,8 +13,8 @@ Thanks for contributing! Here's how to get started:
 ## Setup
 
 ```bash
-git clone git@github.com:fluence-eu/fluence-ci-tools.git
-cd fluence-ci-tools
+git clone git@github.com:fluence-eu/guardian-ci.git
+cd guardian-ci
 bin/setup
 ```
 
@@ -28,17 +28,17 @@ bundle exec rubocop           # linting
 bundle exec rubocop -a        # auto-fix linting
 ```
 
-This gem is mostly a gemspec — its job is to declare a curated set of dev-tool dependencies and ship them to consumers via a single Gemfile entry. There is no application code to write under `lib/` (yet — see Phase 2 in `README.md`). The bulk of contributions therefore land in `fluence-ci-tools.gemspec`.
+This gem is mostly a gemspec — its job is to declare a curated set of dev-tool dependencies and ship them to consumers via a single Gemfile entry. There is no application code to write under `lib/` (yet — see Phase 2 in `README.md`). The bulk of contributions therefore land in `guardian-ci.gemspec`.
 
 ### Bumping or adding a tool
 
-1. Edit `fluence-ci-tools.gemspec` (`spec.add_dependency` lines).
+1. Edit `guardian-ci.gemspec` (`spec.add_dependency` lines).
 2. Run `bundle install` to verify the new constraint resolves.
-3. Run `gem build fluence-ci-tools.gemspec` to confirm the gem still builds.
+3. Run `gem build guardian-ci.gemspec` to confirm the gem still builds.
 4. Update the « What's included » table in `README.md` if pin or tool list changed.
 5. Open the PR.
 
-After merge, cut a release via the standard flow (see below). Consumers pick up the new pin with `bundle update fluence-ci-tools`.
+After merge, cut a release via the standard flow (see below). Consumers pick up the new pin with `bundle update guardian-ci`.
 
 ### Interactive console
 
@@ -126,9 +126,9 @@ Optional — indicates the area affected:
 ## Architecture
 
 ```
-fluence-ci-tools.gemspec                 # The whole point of this gem — 13 add_dependency lines
-lib/fluence/ci/tools.rb                  # Module stub
-lib/fluence/ci/tools/version.rb          # Semantic version (bumped by release workflow)
+guardian-ci.gemspec                      # The whole point of this gem — 13 add_dependency lines
+lib/guardian/ci.rb                       # Module stub
+lib/guardian/ci/version.rb               # Semantic version (bumped by release workflow)
 cliff.toml                               # git-cliff config for CHANGELOG generation
 .github/workflows/                       # See « CI » below
 ```
@@ -140,7 +140,7 @@ There is intentionally no production code under `lib/`. Phase 2 will add a Thor 
 - `frozen_string_literal: true` on every Ruby file
 - Strings: single quotes (unless interpolation is needed)
 - RuboCop: no rule disabling without justification
-- Version in `lib/fluence/ci/tools/version.rb` — do not modify unless for an explicit release
+- Version in `lib/guardian/ci/version.rb` — do not modify unless for an explicit release
 
 ## CI
 

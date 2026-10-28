@@ -1,0 +1,20 @@
+#!/usr/bin/env ruby
+# frozen_string_literal: true
+
+# Run the guardian-ci catalog side-by-side with Rails 8's native bin/ci:
+#
+#   bin/guardian-ci                         # full catalog (alias for `all`)
+#   bin/guardian-ci all
+#   bin/guardian-ci lint                    # single group
+#   bin/guardian-ci codequality
+#   bin/guardian-ci lint --report           # machine output for CI
+#   bin/ci && bin/guardian-ci               # chain with Rails native
+#
+# Sub-commands map 1-1 onto the centralised CI workflows so the local
+# pre-push run mirrors what each `*-pr.yml` job exercises.
+
+require_relative '../config/boot'
+require 'guardian/ci/cli'
+
+argv = ARGV.empty? ? %w[all] : ARGV
+Guardian::Ci::CLI.start(argv)

@@ -12,15 +12,15 @@ Style/StringLiteralsInInterpolation:
 # block legitimately exceeds the default cap.
 Metrics/BlockLength:
   Exclude:
-    - 'fluence-ci-tools.gemspec'
+    - 'guardian-ci.gemspec'
     - 'spec/**/*'
 
-# Bundler resolves `gem 'fluence-ci-tools'` to `lib/fluence-ci-tools.rb`,
+# Bundler resolves `gem 'guardian-ci'` to `lib/guardian-ci.rb`,
 # so the hyphenated filename is mandatory and the snake_case rule
 # does not apply.
 Naming/FileName:
   Exclude:
-    - 'lib/fluence-ci-tools.rb'
+    - 'lib/guardian-ci.rb'
 
 # Step group methods in Steps catalog have a default+report branch
 # each, with up to 3 step calls per branch — they intrinsically clock
@@ -28,4 +28,4 @@ Naming/FileName:
 # `# rubocop:disable` directives.
 Metrics/MethodLength:
   Exclude:
-    - 'lib/fluence/ci/tools/steps.rb'
+    - 'lib/guardian/ci/steps.rb'

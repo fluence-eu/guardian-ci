@@ -1,6 +1,0 @@
-#!/usr/bin/env ruby
-# frozen_string_literal: true
-
-require 'fluence/ci/tools/cli'
-
-Fluence::Ci::Tools::CLI.start(ARGV)

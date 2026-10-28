@@ -1,9 +1,9 @@
 # frozen_string_literal: true
 
 require 'stringio'
-require 'fluence/ci/tools/runner'
+require 'guardian/ci/runner'
 
-RSpec.describe Fluence::Ci::Tools::Runner do
+RSpec.describe Guardian::Ci::Runner do
   let(:io) { StringIO.new }
   subject(:runner) { described_class.new(io: io) }
 

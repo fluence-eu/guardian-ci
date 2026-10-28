@@ -2,12 +2,12 @@
 
 require 'fileutils'
 require 'tmpdir'
-require 'fluence/ci/tools/steps'
+require 'guardian/ci/steps'
 
-RSpec.describe Fluence::Ci::Tools::Steps do
+RSpec.describe Guardian::Ci::Steps do
   let(:host_class) do
     Class.new do
-      include Fluence::Ci::Tools::Steps
+      include Guardian::Ci::Steps
 
       attr_reader :steps
 
@@ -28,10 +28,10 @@ RSpec.describe Fluence::Ci::Tools::Steps do
       expect(host.steps).to eq([['Style: rubocop', 'bundle exec rubocop']])
     end
 
-    it 'writes JSON to tmp/fluence-report/rubocop.json in report mode' do
+    it 'writes JSON to tmp/guardian-report/rubocop.json in report mode' do
       Dir.mktmpdir do |dir|
         Dir.chdir(dir) { host.lint(report: true) }
-        expect(host.steps.last.last).to include('--format json --out tmp/fluence-report/rubocop.json')
+        expect(host.steps.last.last).to include('--format json --out tmp/guardian-report/rubocop.json')
       end
     end
   end
@@ -46,13 +46,13 @@ RSpec.describe Fluence::Ci::Tools::Steps do
                                             ])
     end
 
-    it 'emits report-mode commands with output paths under tmp/fluence-report' do
+    it 'emits report-mode commands with output paths under tmp/guardian-report' do
       Dir.mktmpdir do |dir|
         Dir.chdir(dir) { host.security(report: true) }
         commands = host.steps.map(&:last)
-        expect(commands[0]).to include('--output tmp/fluence-report/brakeman.json')
-        expect(commands[1]).to include('tee tmp/fluence-report/audit.txt')
-        expect(commands[2]).to include('tee tmp/fluence-report/ruby_audit.txt')
+        expect(commands[0]).to include('--output tmp/guardian-report/brakeman.json')
+        expect(commands[1]).to include('tee tmp/guardian-report/audit.txt')
+        expect(commands[2]).to include('tee tmp/guardian-report/ruby_audit.txt')
       end
     end
   end
@@ -68,13 +68,13 @@ RSpec.describe Fluence::Ci::Tools::Steps do
       expect(host.steps.last.last).to include('app lib')
     end
 
-    it 'emits machine-readable reports under tmp/fluence-report in report mode' do
+    it 'emits machine-readable reports under tmp/guardian-report in report mode' do
       Dir.mktmpdir do |dir|
         Dir.chdir(dir) { host.codequality(report: true) }
         commands = host.steps.map(&:last)
-        expect(commands[0]).to include('--format json').and(include('> tmp/fluence-report/reek.json'))
-        expect(commands[1]).to include('tee tmp/fluence-report/flog.txt')
-        expect(commands[2]).to include('tee tmp/fluence-report/flay.txt')
+        expect(commands[0]).to include('--format json').and(include('> tmp/guardian-report/reek.json'))
+        expect(commands[1]).to include('tee tmp/guardian-report/flog.txt')
+        expect(commands[2]).to include('tee tmp/guardian-report/flay.txt')
       end
     end
   end
@@ -95,7 +95,7 @@ RSpec.describe Fluence::Ci::Tools::Steps do
       expect(host.steps.size).to eq(1)
       label, command = host.steps.first
       expect(label).to eq('Docs: yardstick')
-      expect(command).to include('Fluence::Ci::Tools::YardstickRunner.run!')
+      expect(command).to include('Guardian::Ci::YardstickRunner.run!')
     end
 
     it 'lets report: take precedence over build:' do
@@ -177,7 +177,7 @@ RSpec.describe Fluence::Ci::Tools::Steps do
     end
 
     it 'picks up new step groups automatically (auto-pickup)' do
-      Fluence::Ci::Tools::Steps.module_eval do
+      Guardian::Ci::Steps.module_eval do
         def accessibility
           step 'A11y: axe', 'bundle exec axe-rspec'
         end
@@ -185,33 +185,31 @@ RSpec.describe Fluence::Ci::Tools::Steps do
       host.all
       expect(host.steps.map(&:first)).to include('A11y: axe')
     ensure
-      if Fluence::Ci::Tools::Steps.method_defined?(:accessibility)
-        Fluence::Ci::Tools::Steps.send(:remove_method, :accessibility)
-      end
+      Guardian::Ci::Steps.send(:remove_method, :accessibility) if Guardian::Ci::Steps.method_defined?(:accessibility)
     end
 
     it 'propagates report: true to every group method that accepts it' do
       host.all(report: true)
       commands = host.steps.map(&:last)
-      expect(commands).to include(a_string_matching(%r{tmp/fluence-report/rubocop\.json}))
-      expect(commands).to include(a_string_matching(%r{tmp/fluence-report/brakeman\.json}))
-      expect(commands).to include(a_string_matching(%r{tmp/fluence-report/reek\.json}))
-      expect(commands).to include(a_string_matching('Fluence::Ci::Tools::YardstickRunner.run!'))
+      expect(commands).to include(a_string_matching(%r{tmp/guardian-report/rubocop\.json}))
+      expect(commands).to include(a_string_matching(%r{tmp/guardian-report/brakeman\.json}))
+      expect(commands).to include(a_string_matching(%r{tmp/guardian-report/reek\.json}))
+      expect(commands).to include(a_string_matching('Guardian::Ci::YardstickRunner.run!'))
     end
 
     it 'lets per-group overrides win over the global report flag' do
       host.all(report: true, codequality: { paths: 'lib' })
       cq_first = host.steps.find { |label, _| label.start_with?('Quality:') }
-      expect(cq_first.last).not_to include('tmp/fluence-report')
+      expect(cq_first.last).not_to include('tmp/guardian-report')
     end
   end
 
   describe '.ensure_report_dir' do
-    it 'creates tmp/fluence-report when missing' do
+    it 'creates tmp/guardian-report when missing' do
       Dir.mktmpdir do |dir|
         Dir.chdir(dir) do
           described_class.ensure_report_dir
-          expect(Dir.exist?('tmp/fluence-report')).to be true
+          expect(Dir.exist?('tmp/guardian-report')).to be true
         end
       end
     end
@@ -219,7 +217,7 @@ RSpec.describe Fluence::Ci::Tools::Steps do
     it 'is idempotent when the directory already exists' do
       Dir.mktmpdir do |dir|
         Dir.chdir(dir) do
-          FileUtils.mkdir_p('tmp/fluence-report')
+          FileUtils.mkdir_p('tmp/guardian-report')
           expect { described_class.ensure_report_dir }.not_to raise_error
         end
       end
