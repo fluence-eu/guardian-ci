@@ -249,7 +249,7 @@ bundle exec rubocop
 ```
 
 Releases are cut via the centralized release flow:
-1. **Prepare Release PR** workflow (manual dispatch, choose `patch`/`minor`/`major`).
+1. **Prepare Release PR** workflow (manual dispatch): the version is the UTC dispatch time, e.g. `2026.10.28.173012`.
 2. Merge the auto-generated release PR.
 3. **Release** workflow auto-tags + creates a GitHub Release.
 4. **Publish Gem** and **Publish Gem to RubyGems.org** workflows auto-publish to GitHub Packages and rubygems.org on Release publish.

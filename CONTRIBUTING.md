@@ -128,7 +128,7 @@ Optional — indicates the area affected:
 ```
 guardian-ci.gemspec                      # The whole point of this gem — 13 add_dependency lines
 lib/guardian/ci.rb                       # Module stub
-lib/guardian/ci/version.rb               # Semantic version (bumped by release workflow)
+lib/guardian/ci/version.rb               # Dated version (written by release workflow)
 cliff.toml                               # git-cliff config for CHANGELOG generation
 .github/workflows/                       # See « CI » below
 ```
@@ -148,7 +148,7 @@ GitHub Actions workflows under `.github/workflows/`, all wired through `fluence-
 
 - **rubocop-pr.yml** — runs RuboCop on every PR, posts a sticky comment with offense delta vs `main`
 - **rubocop-measure.yml** — establishes the `main` baseline (artifact `rubocop-report`)
-- **prepare-release.yml** — manual dispatch (`patch` / `minor` / `major`) opens a release PR
+- **prepare-release.yml** — manual dispatch opens a release PR versioned with the UTC dispatch time (`YYYY.MM.DD.HHMMSS`)
 - **release.yml** — on merge of a release PR, creates the tag + GitHub Release
 - **publish.yml** — on Release published, pushes the gem to GitHub Packages (also dispatchable manually with a `tag` input for republishing past versions)
 - **publish-rubygems.yml** — on Release published, pushes the same gem to rubygems.org through trusted publishing (same manual `tag` dispatch)
