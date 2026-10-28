@@ -144,7 +144,7 @@ There is intentionally no production code under `lib/`. Phase 2 will add a Thor 
 
 ## CI
 
-GitHub Actions workflows under `.github/workflows/`, all wired through `fluence-eu/ci-workflows@v5` reusables:
+GitHub Actions workflows under `.github/workflows/`, all wired through `fluence-eu/ci-workflows@v7` reusables:
 
 - **rubocop-pr.yml** — runs RuboCop on every PR, posts a sticky comment with offense delta vs `main`
 - **rubocop-measure.yml** — establishes the `main` baseline (artifact `rubocop-report`)
