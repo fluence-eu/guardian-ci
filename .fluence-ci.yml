@@ -2,3 +2,4 @@
 # Full key schema: https://github.com/fluence-eu/ci-workflows#per-project-configuration-fluence-ciyml
 release:
   gem_specs: guardian-ci
+  version: date
