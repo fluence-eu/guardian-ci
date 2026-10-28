@@ -1,7 +1,7 @@
 # frozen_string_literal: true
 
-# Run everything with `bundle exec rake fluence_ci:check`, or invoke an
-# individual group like `bundle exec rake fluence_ci:lint`.
+# Run everything with `bundle exec rake guardian_ci:check`, or invoke an
+# individual group like `bundle exec rake guardian_ci:lint`.
 #
 # `Guardian::Ci::Runner` includes `Guardian::Ci::Steps`, so
 # the runner instance exposes `lint`, `security`, `codequality`, `docs`,
@@ -10,7 +10,7 @@
 
 require 'guardian/ci/runner'
 
-namespace :fluence_ci do
+namespace :guardian_ci do
   desc 'Run all Fluence CI checks (whole catalog)'
   task :check do
     runner = Guardian::Ci::Runner.new

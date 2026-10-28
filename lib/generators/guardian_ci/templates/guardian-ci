@@ -3,12 +3,12 @@
 
 # Run the Fluence CI catalog side-by-side with Rails 8's native bin/ci:
 #
-#   bin/fluence-ci                          # full catalog (alias for `all`)
-#   bin/fluence-ci all
-#   bin/fluence-ci lint                     # single group
-#   bin/fluence-ci codequality
-#   bin/fluence-ci lint --report            # machine output for CI
-#   bin/ci && bin/fluence-ci                # chain with Rails native
+#   bin/guardian-ci                         # full catalog (alias for `all`)
+#   bin/guardian-ci all
+#   bin/guardian-ci lint                    # single group
+#   bin/guardian-ci codequality
+#   bin/guardian-ci lint --report           # machine output for CI
+#   bin/ci && bin/guardian-ci               # chain with Rails native
 #
 # Sub-commands map 1-1 onto the centralised CI workflows so the local
 # pre-push run mirrors what each `*-pr.yml` job exercises.

@@ -5,7 +5,7 @@ require_relative 'ci/version'
 module Guardian
   # Top-level namespace for the meta-gem. The actual catalog lives
   # under `Guardian::Ci::Steps` and is consumed by the rake task
-  # / Rails generator scaffolds shipped in `lib/generators/fluence_ci/`.
+  # / Rails generator scaffolds shipped in `lib/generators/guardian_ci/`.
   module Ci
   end
 end

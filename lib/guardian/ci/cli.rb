@@ -7,7 +7,7 @@ require 'guardian/ci/runner'
 
 module Guardian
   module Ci
-    # Thor CLI exposed via `exe/fluence-ci`. Every method of
+    # Thor CLI exposed via `exe/guardian-ci`. Every method of
     # {Guardian::Ci::Steps} is exposed as a top-level Thor
     # command so the CLI surface mirrors the catalog 1-1: adding a
     # new step group to the mixin makes it appear here automatically.
@@ -19,10 +19,10 @@ module Guardian
     # Steps method makes it appear as a CLI flag with no edit here.
     #
     # Plus two utility commands:
-    #   * `install` — generate `lib/tasks/fluence_ci.rake` (gem)
+    #   * `install` — generate `lib/tasks/guardian_ci.rake` (gem)
     #   * `version` — print the gem version
     class CLI < Thor
-      TEMPLATES = File.expand_path('../../generators/fluence_ci/templates', __dir__)
+      TEMPLATES = File.expand_path('../../generators/guardian_ci/templates', __dir__)
 
       # Steps kwargs that map to a Thor boolean flag rather than a
       # string. Extend this when a new boolean kwarg is added to a
@@ -100,22 +100,22 @@ module Guardian
       Guardian::Ci::Steps.instance_methods(false).each { |group| register_group_command(group) }
 
       desc 'install',
-           'Generate lib/tasks/fluence_ci.rake (Rails apps: use `bin/rails generate fluence_ci:install`)'
+           'Generate lib/tasks/guardian_ci.rake (Rails apps: use `bin/rails generate guardian_ci:install`)'
       option :force, type: :boolean, default: false, desc: 'Overwrite existing destination file'
       # Copy the gem rake-task template into the consumer at
-      # `lib/tasks/fluence_ci.rake`.
+      # `lib/tasks/guardian_ci.rake`.
       # @return [void]
       # @api public
       def install
-        target = 'lib/tasks/fluence_ci.rake'
+        target = 'lib/tasks/guardian_ci.rake'
         if File.exist?(target) && !options[:force]
           say "#{target} already exists — pass --force to overwrite", :red
           exit 1
         end
 
         FileUtils.mkdir_p(File.dirname(target))
-        FileUtils.cp(File.join(TEMPLATES, 'fluence_ci.rake'), target)
-        say "Generated #{target} (run with `bundle exec rake fluence_ci:check`)", :green
+        FileUtils.cp(File.join(TEMPLATES, 'guardian_ci.rake'), target)
+        say "Generated #{target} (run with `bundle exec rake guardian_ci:check`)", :green
       end
 
       desc 'version', 'Print the guardian-ci version'

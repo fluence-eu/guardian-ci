@@ -12,7 +12,7 @@ module Guardian
     #
     # @example Run the full catalog from a rake task
     #   require 'guardian/ci/runner'
-    #   namespace :fluence_ci do
+    #   namespace :guardian_ci do
     #     task :check do
     #       runner = Guardian::Ci::Runner.new
     #       runner.all

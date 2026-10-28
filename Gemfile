@@ -18,7 +18,7 @@ gem 'rspec', '~> 3.0'
 gem 'appraisal', require: false
 
 # Required by the install generator integration tests
-# (`spec/generators/fluence_ci/install_generator_spec.rb`) which load
+# (`spec/generators/guardian_ci/install_generator_spec.rb`) which load
 # `rails/generators/base`. The root Gemfile uses the latest stable Rails
 # with no version lock so Appraisal-generated gemfiles can override
 # without conflict.

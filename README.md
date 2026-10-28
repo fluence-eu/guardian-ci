@@ -18,7 +18,7 @@ Then `bundle install`. Authentication to GitHub Packages is the same as for the 
 
 ### Configure SimpleCov in the consumer's spec_helper
 
-Coverage is collected as a SimpleCov side-effect during `bundle exec fluence-ci tests`, so the consumer must wire SimpleCov before any application or library code is loaded. Without this snippet, the `tests` step still runs green but no `coverage/coverage.json` is produced and the `ruby-gem-coverage-{measure,pr}` reusables have nothing to upload or diff.
+Coverage is collected as a SimpleCov side-effect during `bundle exec guardian-ci tests`, so the consumer must wire SimpleCov before any application or library code is loaded. Without this snippet, the `tests` step still runs green but no `coverage/coverage.json` is produced and the `ruby-gem-coverage-{measure,pr}` reusables have nothing to upload or diff.
 
 **Where to put it.** Add the block at the very top of `spec/spec_helper.rb`, **before any other `require`**. The default RSpec setup includes `--require spec_helper` in `.rspec`, so `spec_helper.rb` is loaded first for every test process — Rails apps included, where `rails_helper.rb` itself re-requires `spec_helper.rb`. Putting SimpleCov in `rails_helper.rb` instead would miss any spec that only requires `spec_helper` (e.g. fast non-Rails specs in a Rails app), resulting in partial coverage.
 
@@ -61,7 +61,7 @@ Repos that want to enforce an absolute threshold (rather than only PR-diff cover
 
 ### Configure yard (gems running the docs workflows)
 
-`bundle exec fluence-ci docs` invokes `yard` against the consumer's source tree; without a `.yardopts` at the repo root, yard falls back to its global defaults (no markup parsing, no api filtering, output under `./doc` regardless of intent). Add a minimal `.yardopts` so the parse step and the HTML site produced by `fluence-ci docs --build` (consumed by `ruby-gem-docs-deploy.yml`) are both predictable:
+`bundle exec guardian-ci docs` invokes `yard` against the consumer's source tree; without a `.yardopts` at the repo root, yard falls back to its global defaults (no markup parsing, no api filtering, output under `./doc` regardless of intent). Add a minimal `.yardopts` so the parse step and the HTML site produced by `guardian-ci docs --build` (consumed by `ruby-gem-docs-deploy.yml`) are both predictable:
 
 ```
 --markup markdown
@@ -82,7 +82,7 @@ Rails apps that don't consume the `ruby-gem-docs-*` reusables can skip this file
 
 ### Configure yardstick threshold (gems running the docs workflows)
 
-`fluence-ci docs --report` runs `Guardian::Ci::YardstickRunner`, which reads `.yardstick.yml` at the repo root to know what rules to enforce and what coverage threshold to gate on. Without it, the docs measure job posts no meaningful report (and the threshold check is a no-op). Minimal config — adjust `threshold` to your target percentage:
+`guardian-ci docs --report` runs `Guardian::Ci::YardstickRunner`, which reads `.yardstick.yml` at the repo root to know what rules to enforce and what coverage threshold to gate on. Without it, the docs measure job posts no meaningful report (and the threshold check is a no-op). Minimal config — adjust `threshold` to your target percentage:
 
 ```yaml
 ---
@@ -178,48 +178,48 @@ A pure gem like `fluence-gateway-client` won't actually invoke `brakeman` (Rails
 
 ## Generator and CLI
 
-The gem ships an `fluence-ci` executable plus a Rails generator that scaffolds the local CI orchestration. Both delegate to the same `Guardian::Ci::Steps` catalog, so the local pre-push run mirrors what the centralised CI workflows execute.
+The gem ships a `guardian-ci` executable plus a Rails generator that scaffolds the local CI orchestration. Both delegate to the same `Guardian::Ci::Steps` catalog, so the local pre-push run mirrors what the centralised CI workflows execute.
 
 ### Installing the local CI scaffold
 
 **Rails app**:
 ```bash
-bin/rails generate fluence_ci:install
-bin/fluence-ci                            # Fluence catalog
-bin/ci && bin/fluence-ci                  # Or chain with Rails native
+bin/rails generate guardian_ci:install
+bin/guardian-ci                           # Fluence catalog
+bin/ci && bin/guardian-ci                 # Or chain with Rails native
 ```
-Writes a standalone executable `bin/fluence-ci` that runs the Fluence catalog via `Guardian::Ci::Runner`. **Does not touch `config/ci.rb`** — Rails 8's native `bin/ci` keeps running its defaults (rubocop, brakeman, bundler-audit) untouched, and `bin/fluence-ci` adds the Fluence-specific checks (ruby_audit, codequality, docs, tests) side-by-side. No duplication.
+Writes a standalone executable `bin/guardian-ci` that runs the Fluence catalog via `Guardian::Ci::Runner`. **Does not touch `config/ci.rb`** — Rails 8's native `bin/ci` keeps running its defaults (rubocop, brakeman, bundler-audit) untouched, and `bin/guardian-ci` adds the Fluence-specific checks (ruby_audit, codequality, docs, tests) side-by-side. No duplication.
 
 **Pure gem**:
 ```bash
-bundle exec fluence-ci install
-bundle exec rake fluence_ci:check         # full catalog
-bundle exec rake fluence_ci:lint          # single group
+bundle exec guardian-ci install
+bundle exec rake guardian_ci:check        # full catalog
+bundle exec rake guardian_ci:lint         # single group
 ```
-Writes `lib/tasks/fluence_ci.rake` with one task per step group plus a `fluence_ci:check` aggregate.
+Writes `lib/tasks/guardian_ci.rake` with one task per step group plus a `guardian_ci:check` aggregate.
 
 ### Running checks ad-hoc
 
 ```bash
-bundle exec fluence-ci all                # full catalog
-bundle exec fluence-ci lint               # single group
-bundle exec fluence-ci version
+bundle exec guardian-ci all               # full catalog
+bundle exec guardian-ci lint              # single group
+bundle exec guardian-ci version
 ```
 
 Each group command (and `all`) accepts `--report` to switch from human-readable console output to machine-readable artefacts under standardised paths — the same files the centralised [`fluence-eu/ci-workflows`](https://github.com/fluence-eu/ci-workflows) reusables consume:
 
 ```bash
-bundle exec fluence-ci lint --report          # tmp/fluence-report/rubocop.json
-bundle exec fluence-ci security --report      # tmp/fluence-report/{brakeman.json,audit.txt,ruby_audit.txt}
-bundle exec fluence-ci codequality --report   # tmp/fluence-report/{reek.json,flog.txt,flay.txt}
-bundle exec fluence-ci docs --report          # doc/yardstick_report.txt (in-process measure + threshold check)
-bundle exec fluence-ci all --report           # propagates --report to every group that accepts it
+bundle exec guardian-ci lint --report         # tmp/fluence-report/rubocop.json
+bundle exec guardian-ci security --report     # tmp/fluence-report/{brakeman.json,audit.txt,ruby_audit.txt}
+bundle exec guardian-ci codequality --report  # tmp/fluence-report/{reek.json,flog.txt,flay.txt}
+bundle exec guardian-ci docs --report         # doc/yardstick_report.txt (in-process measure + threshold check)
+bundle exec guardian-ci all --report          # propagates --report to every group that accepts it
 ```
 
 `docs` additionally exposes `--build` to produce the HTML site under `doc/` (used by the centralised `ruby-gem-docs-deploy.yml` workflow):
 
 ```bash
-bundle exec fluence-ci docs --build           # bundle exec yard doc → doc/index.html
+bundle exec guardian-ci docs --build          # bundle exec yard doc → doc/index.html
 ```
 
 Coverage for `tests` is captured automatically by SimpleCov when configured in the consumer's `spec_helper`, so `tests` does not take `--report`.
@@ -234,11 +234,11 @@ Coverage for `tests` is captured automatically by SimpleCov when configured in t
 | `docs` | `yard doc --no-output --no-stats` (parse smoke test) | in-process `Guardian::Ci::YardstickRunner` — reads `.yardstick.yml`, writes `doc/yardstick_report.txt`, exits 1 below threshold (no consumer Rakefile dependency) | `--build` → `yard doc` (HTML site under `doc/`) |
 | `tests` | `rspec` (overridable to `bin/rails test`) | n/a — coverage is produced as a SimpleCov side effect | `--command "bundle exec rake test"` |
 
-To customise, edit the generated `bin/fluence-ci` (Rails) or `lib/tasks/fluence_ci.rake` (gem). Both files are plain Ruby — instantiate the Runner and call individual groups directly instead of `runner.all`, or pass per-group overrides like `runner.all(codequality: { paths: 'app lib' })`.
+To customise, edit the generated `bin/guardian-ci` (Rails) or `lib/tasks/guardian_ci.rake` (gem). Both files are plain Ruby — instantiate the Runner and call individual groups directly instead of `runner.all`, or pass per-group overrides like `runner.all(codequality: { paths: 'app lib' })`.
 
 #### Replacing custom Rakefile boilerplate
 
-Now that the `docs` group covers all three rake-task responsibilities (`--report` runs the threshold check that was `rake doc:verify`, `--build` produces the HTML site that was `rake doc:build`, and the default mode does the parse smoke test), consumers can drop the entire `namespace :doc` block from their Rakefile. The centralised `ruby-gem-docs-{measure,deploy}` workflows invoke the matching `fluence-ci docs --{report,build}` commands directly.
+Now that the `docs` group covers all three rake-task responsibilities (`--report` runs the threshold check that was `rake doc:verify`, `--build` produces the HTML site that was `rake doc:build`, and the default mode does the parse smoke test), consumers can drop the entire `namespace :doc` block from their Rakefile. The centralised `ruby-gem-docs-{measure,deploy}` workflows invoke the matching `guardian-ci docs --{report,build}` commands directly.
 
 ## Development
 

@@ -14,24 +14,24 @@ RSpec.describe Guardian::Ci::CLI do
   end
 
   describe 'install' do
-    it 'generates lib/tasks/fluence_ci.rake in a fresh directory' do
-      expect { described_class.start(['install']) }.to output(%r{Generated lib/tasks/fluence_ci\.rake}).to_stdout
-      expect(File.exist?('lib/tasks/fluence_ci.rake')).to be true
-      expect(File.read('lib/tasks/fluence_ci.rake')).to include('namespace :fluence_ci')
+    it 'generates lib/tasks/guardian_ci.rake in a fresh directory' do
+      expect { described_class.start(['install']) }.to output(%r{Generated lib/tasks/guardian_ci\.rake}).to_stdout
+      expect(File.exist?('lib/tasks/guardian_ci.rake')).to be true
+      expect(File.read('lib/tasks/guardian_ci.rake')).to include('namespace :guardian_ci')
     end
 
     it 'refuses to overwrite without --force' do
       FileUtils.mkdir_p('lib/tasks')
-      File.write('lib/tasks/fluence_ci.rake', 'existing content')
+      File.write('lib/tasks/guardian_ci.rake', 'existing content')
       expect { described_class.start(['install']) }.to raise_error(SystemExit)
-      expect(File.read('lib/tasks/fluence_ci.rake')).to eq('existing content')
+      expect(File.read('lib/tasks/guardian_ci.rake')).to eq('existing content')
     end
 
     it 'overwrites with --force' do
       FileUtils.mkdir_p('lib/tasks')
-      File.write('lib/tasks/fluence_ci.rake', 'existing content')
+      File.write('lib/tasks/guardian_ci.rake', 'existing content')
       described_class.start(['install', '--force'])
-      expect(File.read('lib/tasks/fluence_ci.rake')).to include('namespace :fluence_ci')
+      expect(File.read('lib/tasks/guardian_ci.rake')).to include('namespace :guardian_ci')
     end
   end
 
@@ -58,7 +58,7 @@ RSpec.describe Guardian::Ci::CLI do
           next unless %i[key keyreq].include?(type)
 
           expect(cmd.options).to have_key(name),
-                                 "expected `fluence-ci #{group}` to expose --#{name}"
+                                 "expected `guardian-ci #{group}` to expose --#{name}"
         end
       end
     end

@@ -3,9 +3,9 @@
 require 'fileutils'
 require 'tmpdir'
 require 'rails/generators'
-require 'generators/fluence_ci/install_generator'
+require 'generators/guardian_ci/install_generator'
 
-RSpec.describe FluenceCi::InstallGenerator do
+RSpec.describe GuardianCi::InstallGenerator do
   let(:tmpdir) { Dir.mktmpdir }
   after { FileUtils.remove_entry(tmpdir) }
 
@@ -20,21 +20,21 @@ RSpec.describe FluenceCi::InstallGenerator do
   end
 
   describe '#install' do
-    it 'copies bin/fluence-ci into the host app' do
+    it 'copies bin/guardian-ci into the host app' do
       run_generator
-      target = File.join(tmpdir, 'bin/fluence-ci')
+      target = File.join(tmpdir, 'bin/guardian-ci')
       expect(File.exist?(target)).to be true
     end
 
-    it 'marks bin/fluence-ci as executable' do
+    it 'marks bin/guardian-ci as executable' do
       run_generator
-      target = File.join(tmpdir, 'bin/fluence-ci')
+      target = File.join(tmpdir, 'bin/guardian-ci')
       expect(File.executable?(target)).to be true
     end
 
     it 'ships a script that delegates to Guardian::Ci::CLI' do
       run_generator
-      target = File.join(tmpdir, 'bin/fluence-ci')
+      target = File.join(tmpdir, 'bin/guardian-ci')
       content = File.read(target)
       expect(content).to include('#!/usr/bin/env ruby')
       expect(content).to include("require 'guardian/ci/cli'")
