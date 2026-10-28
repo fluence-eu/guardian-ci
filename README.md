@@ -252,7 +252,7 @@ Releases are cut via the centralized release flow:
 1. **Prepare Release PR** workflow (manual dispatch, choose `patch`/`minor`/`major`).
 2. Merge the auto-generated release PR.
 3. **Release** workflow auto-tags + creates a GitHub Release.
-4. **Publish Gem** workflow auto-publishes to GitHub Packages on Release publish.
+4. **Publish Gem** and **Publish Gem to RubyGems.org** workflows auto-publish to GitHub Packages and rubygems.org on Release publish.
 
 ## License
 
