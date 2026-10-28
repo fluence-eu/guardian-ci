@@ -14,9 +14,9 @@ module Guardian
     # standardised path under the project root, so the centralised
     # CI workflows can pick the artefact up for baseline diffs:
     #
-    #   * lint        → tmp/fluence-report/rubocop.json
-    #   * security    → tmp/fluence-report/{brakeman.json,audit.txt,ruby_audit.txt}
-    #   * codequality → tmp/fluence-report/{reek.json,flog.txt,flay.txt}
+    #   * lint        → tmp/guardian-report/rubocop.json
+    #   * security    → tmp/guardian-report/{brakeman.json,audit.txt,ruby_audit.txt}
+    #   * codequality → tmp/guardian-report/{reek.json,flog.txt,flay.txt}
     #   * docs        → doc/yardstick_report.txt (via the in-process
     #     {Guardian::Ci::YardstickRunner} — no consumer Rakefile
     #     dependency; honours `.yardstick.yml`)
@@ -28,10 +28,10 @@ module Guardian
       # Path under the project root where every machine-readable
       # report lands when `report: true`. Conventionally gitignored
       # (Ruby projects already gitignore `tmp/`).
-      REPORT_DIR = 'tmp/fluence-report'
+      REPORT_DIR = 'tmp/guardian-report'
 
       # Run the rubocop lint step.
-      # @param report [Boolean] when true, write JSON report to `tmp/fluence-report/rubocop.json`
+      # @param report [Boolean] when true, write JSON report to `tmp/guardian-report/rubocop.json`
       # @return [void]
       # @api public
       def lint(report: false)
@@ -44,7 +44,7 @@ module Guardian
       end
 
       # Run the security audit suite (brakeman, bundler-audit, ruby_audit).
-      # @param report [Boolean] when true, write reports under `tmp/fluence-report/`
+      # @param report [Boolean] when true, write reports under `tmp/guardian-report/`
       # @return [void]
       # @api public
       def security(report: false)
@@ -70,7 +70,7 @@ module Guardian
       # exists (Rails app / engine). Override explicitly otherwise.
       #
       # @param paths [String, nil] space-separated source paths to scan
-      # @param report [Boolean] when true, write reports under `tmp/fluence-report/`
+      # @param report [Boolean] when true, write reports under `tmp/guardian-report/`
       # @return [void]
       # @api public
       def codequality(paths: nil, report: false)
@@ -91,7 +91,7 @@ module Guardian
         end
       end
 
-      # Create `tmp/fluence-report/` if it doesn't already exist.
+      # Create `tmp/guardian-report/` if it doesn't already exist.
       # Idempotent. Each report-mode group method calls this before
       # registering its `step` calls, so the shell commands don't
       # need a `mkdir -p` prefix each time.

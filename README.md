@@ -209,9 +209,9 @@ bundle exec guardian-ci version
 Each group command (and `all`) accepts `--report` to switch from human-readable console output to machine-readable artefacts under standardised paths — the same files the centralised [`fluence-eu/ci-workflows`](https://github.com/fluence-eu/ci-workflows) reusables consume:
 
 ```bash
-bundle exec guardian-ci lint --report         # tmp/fluence-report/rubocop.json
-bundle exec guardian-ci security --report     # tmp/fluence-report/{brakeman.json,audit.txt,ruby_audit.txt}
-bundle exec guardian-ci codequality --report  # tmp/fluence-report/{reek.json,flog.txt,flay.txt}
+bundle exec guardian-ci lint --report         # tmp/guardian-report/rubocop.json
+bundle exec guardian-ci security --report     # tmp/guardian-report/{brakeman.json,audit.txt,ruby_audit.txt}
+bundle exec guardian-ci codequality --report  # tmp/guardian-report/{reek.json,flog.txt,flay.txt}
 bundle exec guardian-ci docs --report         # doc/yardstick_report.txt (in-process measure + threshold check)
 bundle exec guardian-ci all --report          # propagates --report to every group that accepts it
 ```
@@ -228,9 +228,9 @@ Coverage for `tests` is captured automatically by SimpleCov when configured in t
 
 | Group | Default mode | `--report` mode | Other flags |
 |---|---|---|---|
-| `lint` | `rubocop` | `rubocop --format json --out tmp/fluence-report/rubocop.json` | — |
-| `security` | `brakeman` + `bundler-audit` + `ruby-audit` | same trio, machine-readable outputs under `tmp/fluence-report/` | — |
-| `codequality` | `reek` + `flog` + `flay` | same trio, JSON / text outputs under `tmp/fluence-report/` | `--paths "app lib"` |
+| `lint` | `rubocop` | `rubocop --format json --out tmp/guardian-report/rubocop.json` | — |
+| `security` | `brakeman` + `bundler-audit` + `ruby-audit` | same trio, machine-readable outputs under `tmp/guardian-report/` | — |
+| `codequality` | `reek` + `flog` + `flay` | same trio, JSON / text outputs under `tmp/guardian-report/` | `--paths "app lib"` |
 | `docs` | `yard doc --no-output --no-stats` (parse smoke test) | in-process `Guardian::Ci::YardstickRunner` — reads `.yardstick.yml`, writes `doc/yardstick_report.txt`, exits 1 below threshold (no consumer Rakefile dependency) | `--build` → `yard doc` (HTML site under `doc/`) |
 | `tests` | `rspec` (overridable to `bin/rails test`) | n/a — coverage is produced as a SimpleCov side effect | `--command "bundle exec rake test"` |
 

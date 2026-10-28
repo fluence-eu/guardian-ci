@@ -85,15 +85,15 @@ RSpec.describe Guardian::Ci::CLI do
       it 'runs the report-mode command when --report is passed' do
         described_class.start(['lint', '--report'])
         expect(runner).to have_received(:step)
-          .with('Style: rubocop', a_string_including('tmp/fluence-report/rubocop.json'))
+          .with('Style: rubocop', a_string_including('tmp/guardian-report/rubocop.json'))
       end
 
       it 'propagates --report to every group when calling all' do
         described_class.start(['all', '--report'])
         expect(runner).to have_received(:step)
-          .with('Style: rubocop', a_string_including('tmp/fluence-report/rubocop.json'))
+          .with('Style: rubocop', a_string_including('tmp/guardian-report/rubocop.json'))
         expect(runner).to have_received(:step)
-          .with('Quality: reek', a_string_including('tmp/fluence-report/reek.json'))
+          .with('Quality: reek', a_string_including('tmp/guardian-report/reek.json'))
       end
 
       it 'forwards --paths to Steps#codequality' do
