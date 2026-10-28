@@ -9,12 +9,12 @@ module GuardianCi
   # registers it at boot time so consumers don't need any extra wiring.
   #
   # Generates a standalone `bin/guardian-ci` executable that runs the
-  # Fluence catalog via {Guardian::Ci::Runner}, side-by-side with
+  # catalog via {Guardian::Ci::Runner}, side-by-side with
   # Rails 8's native `bin/ci`. No injection into `config/ci.rb` — the
   # two scripts run independently and never duplicate work:
   #
   #   * `bin/ci` runs Rails defaults (rubocop, brakeman, bundler-audit).
-  #   * `bin/guardian-ci` runs Fluence-specific checks (ruby_audit,
+  #   * `bin/guardian-ci` runs the extra checks (ruby_audit,
   #     codequality, docs, tests).
   #
   # Devs chain them as needed (`bin/ci && bin/guardian-ci`) or run
@@ -25,7 +25,7 @@ module GuardianCi
 
     source_root File.expand_path('templates', __dir__)
 
-    # Copy the standalone Fluence runner script into `bin/guardian-ci`
+    # Copy the standalone runner script into `bin/guardian-ci`
     # and mark it executable.
     #
     # @return [void]

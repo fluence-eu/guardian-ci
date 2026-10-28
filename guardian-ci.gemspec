@@ -8,7 +8,7 @@ Gem::Specification.new do |spec|
   spec.authors = ['Jonathan PHILIPPE']
   spec.email = ['jphilippe@fluence.eu']
 
-  spec.summary = 'Curated dev/CI tooling deps for Fluence Ruby projects'
+  spec.summary = 'Curated dev/CI tooling deps for Ruby projects'
   spec.description = 'Single Gemfile entry that bundles rubocop, brakeman, ' \
                      'bundler-audit, ruby_audit, reek, flog, flay, yard, ' \
                      'yardstick, simplecov and undercover with the version ' \

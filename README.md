@@ -1,6 +1,6 @@
 # guardian-ci
 
-Curated dev/CI tooling deps for Fluence Ruby projects. One Gemfile entry pulls in the full set used by the [`fluence-eu/ci-workflows`](https://github.com/fluence-eu/ci-workflows) reusable workflows, with version pins kept consistent across all consumers.
+Curated dev/CI tooling deps for Ruby projects. One Gemfile entry pulls in the full set used by the [`fluence-eu/ci-workflows`](https://github.com/fluence-eu/ci-workflows) reusable workflows, with version pins kept consistent across all consumers.
 
 Solves the « 13 lines of dev gems × 4 repos » bookkeeping problem: when a new tool is added or a pin is bumped, only this gem changes — consumers run `bundle update guardian-ci` and they're aligned.
 
@@ -185,10 +185,10 @@ The gem ships a `guardian-ci` executable plus a Rails generator that scaffolds t
 **Rails app**:
 ```bash
 bin/rails generate guardian_ci:install
-bin/guardian-ci                           # Fluence catalog
+bin/guardian-ci                           # full catalog
 bin/ci && bin/guardian-ci                 # Or chain with Rails native
 ```
-Writes a standalone executable `bin/guardian-ci` that runs the Fluence catalog via `Guardian::Ci::Runner`. **Does not touch `config/ci.rb`** — Rails 8's native `bin/ci` keeps running its defaults (rubocop, brakeman, bundler-audit) untouched, and `bin/guardian-ci` adds the Fluence-specific checks (ruby_audit, codequality, docs, tests) side-by-side. No duplication.
+Writes a standalone executable `bin/guardian-ci` that runs the catalog via `Guardian::Ci::Runner`. **Does not touch `config/ci.rb`** — Rails 8's native `bin/ci` keeps running its defaults (rubocop, brakeman, bundler-audit) untouched, and `bin/guardian-ci` adds the extra checks (ruby_audit, codequality, docs, tests) side-by-side. No duplication.
 
 **Pure gem**:
 ```bash

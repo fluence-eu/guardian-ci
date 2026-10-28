@@ -1,7 +1,7 @@
 #!/usr/bin/env ruby
 # frozen_string_literal: true
 
-# Run the Fluence CI catalog side-by-side with Rails 8's native bin/ci:
+# Run the guardian-ci catalog side-by-side with Rails 8's native bin/ci:
 #
 #   bin/guardian-ci                         # full catalog (alias for `all`)
 #   bin/guardian-ci all

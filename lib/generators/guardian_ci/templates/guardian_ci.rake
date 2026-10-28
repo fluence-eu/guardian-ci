@@ -11,7 +11,7 @@
 require 'guardian/ci/runner'
 
 namespace :guardian_ci do
-  desc 'Run all Fluence CI checks (whole catalog)'
+  desc 'Run all guardian-ci checks (whole catalog)'
   task :check do
     runner = Guardian::Ci::Runner.new
     runner.all
