@@ -1,6 +1,16 @@
 # Changelog
 
 All notable changes to this project will be documented in this file.
+## [2026.10.29.161749] - 2026-10-29
+
+### Documentation
+
+- docs(readme): install from rubygems.org
+
+### Other
+
+- chore(license): assign the copyright to Fluence
+
 ## [2026.10.28.182143] - 2026-10-28
 
 ### Build
