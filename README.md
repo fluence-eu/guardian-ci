@@ -9,12 +9,10 @@ Solves the « 13 lines of dev gems × 4 repos » bookkeeping problem: when a new
 In the consumer's `Gemfile`:
 
 ```ruby
-source 'https://rubygems.pkg.github.com/fluence-eu' do
-  gem 'guardian-ci', require: false, group: %i[development test]
-end
+gem 'guardian-ci', require: false, group: %i[development test]
 ```
 
-Then `bundle install`. Authentication to GitHub Packages is the same as for the other Fluence gems (PAT or `BUNDLE_RUBYGEMS__PKG__GITHUB__COM` env var with `read:packages` scope).
+Then `bundle install`. The gem is published on [rubygems.org](https://rubygems.org/gems/guardian-ci), so no registry authentication is needed.
 
 ### Configure SimpleCov in the consumer's spec_helper
 
@@ -154,9 +152,7 @@ If your repo currently lists these tools individually in its `Gemfile` (typical 
 -  gem 'yardstick', '~> 0.9', require: false
 -  gem 'simplecov', require: false
 -  gem 'undercover', require: false
-+  source 'https://rubygems.pkg.github.com/fluence-eu' do
-+    gem 'guardian-ci', require: false
-+  end
++  gem 'guardian-ci', require: false
  end
 ```
 
