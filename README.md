@@ -128,7 +128,6 @@ Consumers that don't use `prepare-release.yml` / `release.yml` (no release autom
 | `yardstick` | `~> 0.9` | Documentation-coverage gate |
 | `simplecov` | `~> 1.3` | Test-coverage collector |
 | `undercover` | `~> 0.9` | Coverage delta vs base branch |
-| `benchmark` | `~> 0.4` | Required by `undercover` on Ruby 3.5+ where it left the stdlib |
 
 Every dependency is pinned at major.minor. Same rationale as the centralised workflows: `~> X.Y` keeps the baseline/delta numbers reported by the sticky CI comments stable across runs while still letting patch-level fixes through. To bump a tool, change it here once and all consumers receive the new version on `bundle update guardian-ci`.
 
