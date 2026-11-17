@@ -115,7 +115,7 @@ Consumers that don't use `prepare-release.yml` / `release.yml` (no release autom
 
 | Tool | Version pin | Purpose |
 |---|---|---|
-| `rubocop` | `~> 1.86` | Style + correctness lint |
+| `rubocop` | `~> 1.92` | Style + correctness lint |
 | `rubocop-rails-omakase` | `~> 1.1` | Omakase rules for Rails apps |
 | `rubocop-rspec` | `~> 3.10` | RSpec-specific cops |
 | `brakeman` | `~> 8.1` | Rails static security analysis |

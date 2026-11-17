@@ -37,7 +37,7 @@ Gem::Specification.new do |spec|
   # Tools shipped to the consumer's :development, :test bundle. Every
   # tool is pinned at major.minor to keep the baseline/delta numbers
   # the centralised CI workflows surface stable across runs — same
-  # rationale as rubocop's ~> 1.86 pin.
+  # rationale as rubocop's ~> 1.92 pin.
   # Required by undercover on Ruby 3.5+ where benchmark left the stdlib.
   # Declared here so consumers don't have to add it themselves.
   spec.add_dependency 'benchmark', '~> 0.4'
@@ -46,7 +46,7 @@ Gem::Specification.new do |spec|
   spec.add_dependency 'flay', '~> 2.14'
   spec.add_dependency 'flog', '~> 4.9'
   spec.add_dependency 'reek', '~> 6.6'
-  spec.add_dependency 'rubocop', '~> 1.86'
+  spec.add_dependency 'rubocop', '~> 1.92'
   spec.add_dependency 'rubocop-rails-omakase', '~> 1.1'
   spec.add_dependency 'rubocop-rspec', '~> 3.10'
   spec.add_dependency 'ruby_audit', '~> 3.1'
