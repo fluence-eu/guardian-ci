@@ -50,12 +50,12 @@ Gem::Specification.new do |spec|
   spec.add_dependency 'rubocop-rails-omakase', '~> 1.1'
   spec.add_dependency 'rubocop-rspec', '~> 3.10'
   spec.add_dependency 'ruby_audit', '~> 3.1'
-  spec.add_dependency 'simplecov', '~> 0.22'
+  spec.add_dependency 'simplecov', '~> 1.3'
   # Powers the install generator (Thor::Group) and the `guardian-ci`
   # CLI exe. Kept loose at major because Thor's surface API barely
   # changes — we use only `Thor`, `Thor::Group`, `Thor::Actions`.
   spec.add_dependency 'thor', '~> 1.3'
-  spec.add_dependency 'undercover', '~> 0.8'
+  spec.add_dependency 'undercover', '~> 0.9'
   spec.add_dependency 'yard', '~> 0.9'
   spec.add_dependency 'yardstick', '~> 0.9'
 end
