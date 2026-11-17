@@ -1,6 +1,14 @@
 # Changelog
 
 All notable changes to this project will be documented in this file.
+## [2026.11.17.140227] - 2026-11-17
+
+### Build
+
+- build(gemspec): drop benchmark, declared by undercover since 0.8.5
+- build(gemspec): raise the rubocop floor to ~> 1.92
+- build(gemspec)!: move to simplecov 1.3 and undercover 0.9
+
 ## [2026.10.29.161749] - 2026-10-29
 
 ### Documentation

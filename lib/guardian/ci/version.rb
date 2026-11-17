@@ -2,6 +2,6 @@
 
 module Guardian
   module Ci
-    VERSION = '2026.10.29.161749'
+    VERSION = '2026.11.17.140227'
   end
 end
