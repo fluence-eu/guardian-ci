@@ -36,14 +36,13 @@ SimpleCov.start 'rails' do
 end
 ```
 
-**Pure gem** — use the default profile and filter the spec tree explicitly:
+**Pure gem** — use the default profile, which already skips `spec/` and `test/`:
 
 ```ruby
 require 'simplecov'
 require 'undercover/simplecov_formatter'
 
 SimpleCov.start do
-  add_filter '/spec/'
   formatter SimpleCov::Formatter::MultiFormatter.new(
     [
       SimpleCov::Formatter::HTMLFormatter,
@@ -53,9 +52,9 @@ SimpleCov.start do
 end
 ```
 
-The `Undercover` formatter writes `coverage/coverage.json` — the file the centralised coverage workflows pick up. The `HTMLFormatter` writes `coverage/index.html` for local browsing. Add `coverage/` to `.gitignore` if not already present.
+The `Undercover` formatter writes `coverage/coverage.json` — the file the centralised coverage workflows pick up. The `HTMLFormatter` writes `coverage/index.html` for local browsing, plus its own `coverage/coverage.json`: keep `Undercover` last so its file wins, otherwise undercover checks nothing and passes. Add `coverage/` to `.gitignore` if not already present.
 
-Repos that want to enforce an absolute threshold (rather than only PR-diff coverage) can extend the block with `minimum_coverage` / `minimum_coverage_by_file` — see [SimpleCov's docs](https://github.com/simplecov-ruby/simplecov#minimum-coverage).
+Repos that want to enforce an absolute threshold (rather than only PR-diff coverage) can extend the block with `coverage :line do minimum 95; minimum 70, per: :file end` — see [SimpleCov's docs](https://github.com/simplecov-ruby/simplecov/blob/main/docs/Configuration.md#coverage-thresholds-and-exit-behavior).
 
 ### Configure yard (gems running the docs workflows)
 
@@ -116,7 +115,7 @@ Consumers that don't use `prepare-release.yml` / `release.yml` (no release autom
 
 | Tool | Version pin | Purpose |
 |---|---|---|
-| `rubocop` | `~> 1.86` | Style + correctness lint |
+| `rubocop` | `~> 1.92` | Style + correctness lint |
 | `rubocop-rails-omakase` | `~> 1.1` | Omakase rules for Rails apps |
 | `rubocop-rspec` | `~> 3.10` | RSpec-specific cops |
 | `brakeman` | `~> 8.1` | Rails static security analysis |
@@ -127,9 +126,8 @@ Consumers that don't use `prepare-release.yml` / `release.yml` (no release autom
 | `flay` | `~> 2.14` | Code-duplication scorer |
 | `yard` | `~> 0.9` | Documentation generator |
 | `yardstick` | `~> 0.9` | Documentation-coverage gate |
-| `simplecov` | `~> 0.22` | Test-coverage collector |
-| `undercover` | `~> 0.8` | Coverage delta vs base branch |
-| `benchmark` | `~> 0.4` | Required by `undercover` on Ruby 3.5+ where it left the stdlib |
+| `simplecov` | `~> 1.3` | Test-coverage collector |
+| `undercover` | `~> 0.9` | Coverage delta vs base branch |
 
 Every dependency is pinned at major.minor. Same rationale as the centralised workflows: `~> X.Y` keeps the baseline/delta numbers reported by the sticky CI comments stable across runs while still letting patch-level fixes through. To bump a tool, change it here once and all consumers receive the new version on `bundle update guardian-ci`.
 

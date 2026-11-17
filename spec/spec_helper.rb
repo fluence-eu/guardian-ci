@@ -4,12 +4,11 @@ require 'simplecov'
 require 'undercover/simplecov_formatter'
 
 SimpleCov.start do
-  add_filter '/spec/'
   # Bumped by the release workflow on every release, which makes
   # undercover flag it as "changed and uncovered" on every PR whose
   # coverage baseline predates the release commit. Contains only
   # the VERSION constant — nothing to test.
-  add_filter '/lib/guardian/ci/version.rb'
+  skip '/lib/guardian/ci/version.rb'
   formatter SimpleCov::Formatter::MultiFormatter.new(
     [
       SimpleCov::Formatter::HTMLFormatter,
